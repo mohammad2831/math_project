@@ -15,6 +15,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
+from django.db import transaction
+from django.db.models import F
 
 
 def test_ws(request):
@@ -81,9 +83,12 @@ class QuestionIntegralView(APIView):
         #if cache is not exist then fetch from sql
         #and set it in redis
         else:
+            #fetch from sql
             question = get_object_or_404(QuestionIntegral, id=id_q)
+            #get seryalized data
             ser_data = QuestionIntegralFormSerializer(question).data
             ser_data_json = json.dumps(ser_data)
+            #cash data from redis
             cache.set(question_cache_key, ser_data_json, timeout=1200) 
 
            
@@ -142,7 +147,7 @@ class QuestionIntegralView(APIView):
                                 result =self.calculate_score(request, id_q) 
                                 print("test calculate")
                                 cache.delete(cache_key_user)
-                                UserProgress.objects.filter(user=user).update(score=result["score"])
+                                #UserProgress.objects.filter(user=user).update(score=result["score"])
                                 return Response({"score": result["score"],"mistake":result["mistake"],"message":result["message"]}, status=200)
 
                             if id_s >= len(cached_data_correct_option_load):
@@ -204,11 +209,24 @@ class QuestionIntegralView(APIView):
         print("total-score",cached_data_question_load['score'])
         
         mistake = cached_data_user_status_load['progress_list'].count("0")
-        print("mistake:",mistake)
-        total_score = cached_data_question_load['score'] - mistake
-        #update user score in sql
-        user.progress.filter(user=user).update(score=(cached_data_question_load['score'] - mistake))      
+        print("mistake:", mistake)
 
+
+
+
+                
+        mistake = cached_data_user_status_load['progress_list'].count("0")
+        base_score = int(cached_data_question_load.get('score', 0))
+        total_score = max(0, base_score - mistake)
+
+        if total_score >= 0:
+            UserProgress.objects.filter(user=user).update(score=F('score') + total_score)
+            
+            print("Updated score (after save):")
+
+           
+            refreshed_instance = UserProgress.objects.get(user=user)
+            print("Verified DB Score:", refreshed_instance.score)
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(

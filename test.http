@@ -4,18 +4,20 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "testt@gmail.com",
-  "phone_number": "09127700896",
-  "full_name": "tetst",
+  "email": "amir@gmail.com",
+  "phone_number": "01111111111",
+  "full_name": "amir",
   "password": "6541"
 }
+############################################
+
 ############################################
 POST http://127.0.0.1:8000/accounts/verify/
 Content-Type: application/json
 Accept: application/json
 
 {
-  "code": 1100
+  "code": 7647
 }
 
 ################################3
@@ -24,12 +26,30 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "phone_number": "09127700896",
+  "phone_number": "09000000000",
   "password":"6541"
 }
 
 ####
+GET http://127.0.0.1:8000/accounts/profile/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ3Njc3MTUzLCJpYXQiOjE3NDc2NzExNTMsImp0aSI6Ijk0MDBmODg2NjU0NTRmZTJiYjIzMDNmNDlhNWU2ODliIiwidXNlcl9pZCI6IjA5MDAwMDAwMDAwIiwiaWQiOjEsInBob25lX251bWJlciI6IjA5MDAwMDAwMDAwIiwiZnVsbF9uYW1lIjoibWhtZCIsImVtYWlsIjoibWhtZEBnbWFpbC5jb20ifQ.7GxyBj4Vq-1sSXvBqd9BqtkvELC2udgbX0HT0sFn_5U
 
+
+####
+####
+PUT  http://127.0.0.1:8000/accounts/profile/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ3NDk1OTE0LCJpYXQiOjE3NDc0ODk5MTQsImp0aSI6ImQ2NDcyYmIwMDEyNTQ2MmE4MzUyODUyZTIwYjg5YzFjIiwidXNlcl9pZCI6IjA5MTExMTExMTExIiwiaWQiOjQsInBob25lX251bWJlciI6IjA5MTExMTExMTExIiwiZnVsbF9uYW1lIjoiaGFzYW4iLCJlbWFpbCI6Imhhc2FuQGdtYWlsLmNvbSJ9.Y_uVLEtHzBorQachtjYxK7FVP9AYRztkSvc-OBcf_XM
+
+{
+  "full_name": "amir"
+
+  }
+
+####
 POST http://77.237.82.221:8000/accounts/register/
 Content-Type: application/json
 Accept: application/json
@@ -57,16 +77,20 @@ Accept: application/json
 }
 
 ###################################
-GET  http://77.237.82.221:8000/question-app/integral/15/
+GET  http://127.0.0.1:8000/question-app/integral/1/
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1MzIyNTM4LCJpYXQiOjE3NDUzMTY1MzgsImp0aSI6IjZiMzU4ZTY2ZTdkMDQ3NGVhZmI0ZmVlNjIyNjk1Y2MwIiwidXNlcl9pZCI6IjYwMDAwMDAwMDAwIiwicGhvbmVfbnVtYmVyIjoiNjAwMDAwMDAwMDAiLCJmdWxsX25hbWUiOiI2IiwiZW1haWwiOiI2QGV4YW1wbGUuY29tIiwic2NvcmUiOjIsImxhc3QtcXVlc3Rpb24taW50ZWdyYWwiOjEsImxhc3QtcXVlc3Rpb24tZGVyaXZhdGl2ZSI6MH0.D_7V3--Z496iUaL2Hh1qjlZ29YsnZu0Dh0C7WMSDlPo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ3Njc3MTUzLCJpYXQiOjE3NDc2NzExNTMsImp0aSI6Ijk0MDBmODg2NjU0NTRmZTJiYjIzMDNmNDlhNWU2ODliIiwidXNlcl9pZCI6IjA5MDAwMDAwMDAwIiwiaWQiOjEsInBob25lX251bWJlciI6IjA5MDAwMDAwMDAwIiwiZnVsbF9uYW1lIjoibWhtZCIsImVtYWlsIjoibWhtZEBnbWFpbC5jb20ifQ.7GxyBj4Vq-1sSXvBqd9BqtkvELC2udgbX0HT0sFn_5U
 ####################################################################
-GET  http://127.0.0.1:8000/question-app/15/
+POST   http://127.0.0.1:8000/question-app/integral/1/4/
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1MzIyNTM4LCJpYXQiOjE3NDUzMTY1MzgsImp0aSI6IjZiMzU4ZTY2ZTdkMDQ3NGVhZmI0ZmVlNjIyNjk1Y2MwIiwidXNlcl9pZCI6IjYwMDAwMDAwMDAwIiwicGhvbmVfbnVtYmVyIjoiNjAwMDAwMDAwMDAiLCJmdWxsX25hbWUiOiI2IiwiZW1haWwiOiI2QGV4YW1wbGUuY29tIiwic2NvcmUiOjIsImxhc3QtcXVlc3Rpb24taW50ZWdyYWwiOjEsImxhc3QtcXVlc3Rpb24tZGVyaXZhdGl2ZSI6MH0.D_7V3--Z496iUaL2Hh1qjlZ29YsnZu0Dh0C7WMSDlPo
-#################################
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ3Njc3MTUzLCJpYXQiOjE3NDc2NzExNTMsImp0aSI6Ijk0MDBmODg2NjU0NTRmZTJiYjIzMDNmNDlhNWU2ODliIiwidXNlcl9pZCI6IjA5MDAwMDAwMDAwIiwiaWQiOjEsInBob25lX251bWJlciI6IjA5MDAwMDAwMDAwIiwiZnVsbF9uYW1lIjoibWhtZCIsImVtYWlsIjoibWhtZEBnbWFpbC5jb20ifQ.7GxyBj4Vq-1sSXvBqd9BqtkvELC2udgbX0HT0sFn_5U
+
+{
+  "answer": "1"
+}
+#################################1-1 2-4 3-2 4-1
 
 GET  http://127.0.0.1:8000/accounts/thruthling/
 Content-Type: application/json
@@ -140,7 +164,22 @@ https://api.kavenegar.com/v1/2F727630526A427263695969303945455A4D515859584730792
 GET http://127.0.0.1:8000/question-web/
 Content-Type: application/json
 Accept: application/json
+########################
+
+
+GET http://127.0.0.1:8000/question-web/1/
+Content-Type: application/json
+Accept: application/json
+########################
+POST  http://127.0.0.1:8000/question-web/1/5/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "answer":"1"
+}
 ################3
+
 
 GET http://77.237.82.221:8000/question-web/
 Content-Type: application/json

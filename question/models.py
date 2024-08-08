@@ -43,7 +43,6 @@ class QuestionIntegral(models.Model):
 
         self.stage = num_stages
 
-        # مقدار score را هم بر اساس سختی و تعداد مراحل مقداردهی می‌کنیم
         if self.difficulty == 'easy':
             self.score = num_stages + 3
         elif self.difficulty == 'medium':
@@ -51,7 +50,6 @@ class QuestionIntegral(models.Model):
         elif self.difficulty == 'hard':
             self.score = num_stages + 9
 
-        # مجدداً ذخیره می‌کنیم ولی فقط فیلدهای stage و score
         super().save(update_fields=['stage', 'score'])  
 
 
@@ -77,16 +75,12 @@ class QuestionDerivative(models.Model):
     def save(self, *args, **kwargs):
         is_new = self.pk is None
         
-        # اول خود سوال را ذخیره می‌کنیم
         super().save(*args, **kwargs)
 
-        # حالا تعداد stage های مربوط به این سوال را می‌شماریم
-        num_stages = self.stages.count()  # فرض: رابطه‌ای داری به اسم stages
+        num_stages = self.stages.count()  
 
-        # مقدار stage را مقداردهی می‌کنیم
         self.stage = num_stages
 
-        # مقدار score را هم بر اساس سختی و تعداد مراحل مقداردهی می‌کنیم
         if self.difficulty == 'easy':
             self.score = num_stages + 3
         elif self.difficulty == 'medium':
@@ -94,7 +88,6 @@ class QuestionDerivative(models.Model):
         elif self.difficulty == 'hard':
             self.score = num_stages + 9
 
-        # مجدداً ذخیره می‌کنیم ولی فقط فیلدهای stage و score
         super().save(update_fields=['stage', 'score'])
 
 
@@ -170,4 +163,4 @@ class UserProgress(models.Model):
    
 
     def __str__(self):
-        return f'{self.user} - {self.category} - Last Q: {self.last_question} - Score: {self.score}'
+        return f'{self.user} - Last intgral: {self.last_question_integral} - Last derivative: {self.last_question_derivative}- Score: {self.score}'

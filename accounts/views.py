@@ -1,7 +1,7 @@
 import random
 from . models import OtpCode, User
 from rest_framework.views import APIView
-from .serializers import UserRegisterSerializer, UserLoginSerializer, VerifyCodeSerializer, UserProfileSerializer, UserForgotpasswordSerializer, OtpResetPasswordSerializer, ResetPasswordSerializer, MyTokenObtainPairSerializer
+from .serializers import UserProgressSerializer,UserProfileUpdateSerializer,UserRegisterSerializer, UserLoginSerializer, VerifyCodeSerializer, UserProfileSerializer, UserForgotpasswordSerializer, OtpResetPasswordSerializer, ResetPasswordSerializer, MyTokenObtainPairSerializer
 from rest_framework.response import Response
 
 from rest_framework.authtoken.models import Token
@@ -239,19 +239,25 @@ class UserForgotpasswordView(APIView):
    
 class UserProfileView(APIView):
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
-
     authentication_classes = [JWTAuthentication]  
     permission_classes = [IsAuthenticated]  
 
     def get(self, request):
-        #user = User.objects.get(email=request.user.email)
         user = request.user 
-        ser_data = UserProfileSerializer(user)
-        return Response(ser_data.data, status=200)
+        ser_data = UserProfileSerializer(user).data
+
+        progress = UserProgress.objects.filter(user=user).first()
+        ser_data_progress = UserProgressSerializer(progress).data if progress else None
+
+        return Response({
+            "user": ser_data,
+            "progress": ser_data_progress
+        }, status=200)
+
     
     def put(self, request, *args, **kwargs):
         user = request.user
-        serializer = UserProfileSerializer(user, data=request.data, partial=True) 
+        serializer = UserProfileUpdateSerializer(user, data=request.data, partial=True) 
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

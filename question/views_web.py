@@ -202,29 +202,25 @@ class QuestionView(APIView):
                 try:
                     cached_data_correct_option_load = json.loads(cached_data_correct_option)
                     
-                    #check if answer is correct or not
-                    if cached_data_correct_option_load[id_s - 1] == answer.validated_data['answer']:
+                    if 0 <= id_s - 1 < len(cached_data_correct_option_load):
 
-                            #check if all question is solved and add score
-                        if id_s == len(cached_data_correct_option_load):
-                                
-                            return Response({"message": "correct"}, status=201)
+                        if cached_data_correct_option_load[id_s - 1] == answer.validated_data['answer']:
 
-                        if id_s >= len(cached_data_correct_option_load):
-                            return Response({"message": "the stage is finished"}, status=405)
+                            if id_s == len(cached_data_correct_option_load):
+                                return Response({"message": "final-corect"}, status=201)
 
-                        return Response({"message": "correct"}, status=200)
-                        
+                            return Response({"message": "correct"}, status=200)
+
+                        else:
+                            return Response({"message": "incorrect"}, status=200)
+
                     else:
-                            
-                        return Response({"message": "incorrect"}, status=200)
-                        
-      
+                        return Response({"error": "Question index out of range"}, status=400)
 
                 except json.JSONDecodeError:
                     return Response({"error": "Unable to decode cached data"}, status=400)
             else:
-                return Response({"error": "problem in correct option"}, status=409)    
+                return Response({"error": "Problem in correct option"}, status=409)   
  
             
 
