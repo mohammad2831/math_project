@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h3>{{ question.title }}</h3>
+<h3>مرحله: {{ stage.stage_number }}</h3>
+<br>
+
+{% if message %}
+<h1 style="color: red;">{{ message }}</h1>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+
+    <div>
+        <input type="radio" id="option1" name="option" value="1">
+        <label for="option1">{{ stage.option1_title }}</label>
+        {% if stage.option1_image %}
+        <img src="{{ stage.option1_image.url }}" style="width: 300px; height: 370px;">
+        {% endif %}
+    </div>
+
+    <div>
+        <input type="radio" id="option2" name="option" value="2">
+        <label for="option2">{{ stage.option2_title }}</label>
+        {% if stage.option2_image %}
+        <img src="{{ stage.option2_image.url }}" style="width: 300px; height: 370px;">
+        {% endif %}
+    </div>
+
+    <div>
+        <input type="radio" id="option3" name="option" value="3">
+        <label for="option3">{{ stage.option3_title }}</label>
+        {% if stage.option3_image %}
+        <img src="{{ stage.option3_image.url }}" style="width: 300px; height: 370px;">
+        {% endif %}
+    </div>
+
+    <div>
+        <input type="radio" id="option4" name="option" value="4">
+        <label for="option4">{{ stage.option4_title }}</label>
+        {% if stage.option4_image %}
+        <img src="{{ stage.option4_image.url }}" style="width: 300px; height: 370px;">
+        {% endif %}
+    </div>
+
+    <br>
+    <button type="submit" class="btn btn-primary">ارسال پاسخ</button>
+</form>
+
+{% endblock %}
