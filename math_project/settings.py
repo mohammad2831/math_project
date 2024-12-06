@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from django.conf import settings  # اضافه کردن این خط برای استفاده از تنظیمات
+from datetime import timedelta
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -159,6 +160,20 @@ CACHES = {
         }
     }
 }
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=135),  # زمان انقضای توکن اکسس
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # زمان انقضای توکن رفرش
+    'ROTATE_REFRESH_TOKENS': False,  # جلوگیری از چرخش توکن رفرش بعد از استفاده
+    'BLACKLIST_AFTER_ROTATION': False,  # جلوگیری از قرار دادن توکن‌های استفاده‌شده در لیست سیاه
+    'ALGORITHM': 'HS256',  # الگوریتم رمزنگاری
+    'SIGNING_KEY': SECRET_KEY,  # کلید امضای JWT (مطمئن شوید که این کلید در تنظیمات شما وجود دارد)
+    'AUTH_HEADER_TYPES': ('Bearer',),  # نوع هدر برای توکن
+    'USER_ID_FIELD': 'id',  # فیلد شناسه کاربر
+    'USER_ID_CLAIM': 'user_id',  # شناسه کاربر در توکن
+}
+
 
 
 

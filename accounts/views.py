@@ -17,6 +17,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 import jwt
 from .connections import get_redis_connection
 from django.core.cache import cache
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 #reset and change the password
@@ -122,13 +123,16 @@ class UserForgotpasswordView(APIView):
 
    
 class UserProfileView(APIView):
-    authentication_classes = [TokenAuthentication] 
-    permission_classes = [IsAuthenticated,IsProfileOwner]
+    authentication_classes = [JWTAuthentication]  # استفاده از JWT Authentication
+    permission_classes = [IsAuthenticated]  # فقط کاربرانی که احراز هویت شده‌اند می‌توانند به این API دسترسی داشته باشند
 
     def get(self, request):
         user = User.objects.get(email=request.user.email)
         ser_data = UserProfileSerializer(user)
-        return Response(ser_data.data, status=status.HTTP_200_OK)
+        return Response(ser_data.data, status=200)
+    
+
+
 
     def put(self, request, *args, **kwargs):
         user = request.user
@@ -159,24 +163,17 @@ class UserLoginView(APIView):
 
 
 
-
 class UserRegisterVerifyCodeView(APIView):
     def post(self, request):
-        # ایجاد شیء VerifyCodeSerializer و بررسی صحت داده‌ها
         ser_data = VerifyCodeSerializer(data=request.data)
         if ser_data.is_valid():
             otp_code = ser_data.validated_data['code']
-            print(f"Received OTP code: {otp_code}")
-
-            # بازیابی داده‌های کاربر از کش با استفاده از کد OTP
             user_data = cache.get(f'user_registration:{otp_code}')
-            print(f"User data from cache: {user_data}")
             
-            # بررسی اینکه داده‌های کاربر در کش موجود است یا خیر
             if not user_data:
                 return Response({"error": "Invalid or expired OTP code."}, status=400)
 
-            # ثبت کاربر جدید با داده‌های معتبر
+            # ایجاد کاربر جدید
             user = User.objects.create_user(
                 email=user_data['email'],
                 phone_number=user_data['phone_number'],
@@ -184,20 +181,16 @@ class UserRegisterVerifyCodeView(APIView):
                 password=user_data['password']
             )
 
-            # حذف رکورد OTP بعد از تایید
-            code_instance = OtpCode.objects.get(phone_number=user_data['phone_number'])
-            code_instance.delete()
+            # حذف کد OTP
+            OtpCode.objects.filter(phone_number=user_data['phone_number']).delete()
 
-            # ایجاد توکن برای کاربر جدید
-            token = Token.objects.create(user=user)
+            # ایجاد توکن‌های JWT
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
 
-            # بازگشت توکن
-            return Response({'token': token.key, 'status': 205}, status=200)
+            return Response({'token': access_token, 'status': 200}, status=200)
 
         return Response({"error": "Invalid OTP code."}, status=400)
-
-        
-
 
         
 '''
@@ -263,7 +256,7 @@ class UserRegisterView(APIView):
             }
 
         cache.set(f'user_registration:{random_code}', user_data, timeout=920)
-        return Response({"otp":random_code, "jwt_token": ""}, status=200)
+        return Response({"code":random_code,}, status=200)
   
 
 
