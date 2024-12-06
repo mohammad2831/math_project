@@ -123,11 +123,12 @@ class UserForgotpasswordView(APIView):
 
    
 class UserProfileView(APIView):
-    authentication_classes = [JWTAuthentication]  # استفاده از JWT Authentication
-    permission_classes = [IsAuthenticated]  # فقط کاربرانی که احراز هویت شده‌اند می‌توانند به این API دسترسی داشته باشند
+    authentication_classes = [JWTAuthentication]  
+    permission_classes = [IsAuthenticated]  
 
     def get(self, request):
-        user = User.objects.get(email=request.user.email)
+        #user = User.objects.get(email=request.user.email)
+        user = request.user 
         ser_data = UserProfileSerializer(user)
         return Response(ser_data.data, status=200)
     
@@ -169,6 +170,7 @@ class UserRegisterVerifyCodeView(APIView):
         if ser_data.is_valid():
             otp_code = ser_data.validated_data['code']
             user_data = cache.get(f'user_registration:{otp_code}')
+            user_cash = cache.delete(f'user_registration:{otp_code}')
             
             if not user_data:
                 return Response({"error": "Invalid or expired OTP code."}, status=400)
@@ -181,10 +183,8 @@ class UserRegisterVerifyCodeView(APIView):
                 password=user_data['password']
             )
 
-            # حذف کد OTP
             OtpCode.objects.filter(phone_number=user_data['phone_number']).delete()
 
-            # ایجاد توکن‌های JWT
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
 
@@ -255,9 +255,10 @@ class UserRegisterView(APIView):
                 'otp': random_code
             }
 
-        cache.set(f'user_registration:{random_code}', user_data, timeout=920)
-        return Response({"code":random_code,}, status=200)
-  
+            cache.set(f'user_registration:{random_code}', user_data, timeout=920)
+            return Response({"code":random_code,}, status=200)
+        return Response({"error": "Invalid data."}, status=400)
+
 
 
 class UserLogoutView(APIView):

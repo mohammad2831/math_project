@@ -163,15 +163,15 @@ CACHES = {
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=135),  # زمان انقضای توکن اکسس
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # زمان انقضای توکن رفرش
-    'ROTATE_REFRESH_TOKENS': False,  # جلوگیری از چرخش توکن رفرش بعد از استفاده
-    'BLACKLIST_AFTER_ROTATION': False,  # جلوگیری از قرار دادن توکن‌های استفاده‌شده در لیست سیاه
-    'ALGORITHM': 'HS256',  # الگوریتم رمزنگاری
-    'SIGNING_KEY': SECRET_KEY,  # کلید امضای JWT (مطمئن شوید که این کلید در تنظیمات شما وجود دارد)
-    'AUTH_HEADER_TYPES': ('Bearer',),  # نوع هدر برای توکن
-    'USER_ID_FIELD': 'id',  # فیلد شناسه کاربر
-    'USER_ID_CLAIM': 'user_id',  # شناسه کاربر در توکن
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=500), 
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7), 
+    'ROTATE_REFRESH_TOKENS': False,  
+    'BLACKLIST_AFTER_ROTATION': False,  
+    'ALGORITHM': 'HS256', 
+    'SIGNING_KEY': SECRET_KEY,  
+    'AUTH_HEADER_TYPES': ('Bearer',),  
+    'USER_ID_FIELD': 'id',  
+    'USER_ID_CLAIM': 'user_id',  
 }
 
 

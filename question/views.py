@@ -17,26 +17,15 @@ class AllQuestionView(APIView):
     def get(self, request):
         questions = Question.objects.all()
 
-        q= Question.objects.get(id=8)
-        
-        print(q.img_base64)
-
-
         serializer = AllQuestionSerializer(questions, many=True, context={'request': request})
         return Response(serializer.data)
 
-
-
-
 class QuestionView(APIView):
-    authentication_classes = [TokenAuthentication] 
-    permission_classes = [IsAuthenticated]
-
-    
-   
+    #authentication_classes = [TokenAuthentication] 
+    #permission_classes = [IsAuthenticated]
 
     def post(self, request, id_q, id_s):
-        user = User.objects.get(user=request.user)
+       # user = User.objects.get(user=request.user)
         question = get_object_or_404(Question, id=id_q)
         stage = Stage.objects.filter(question=question, stage_number=id_s).first()
 
@@ -59,26 +48,26 @@ class QuestionView(APIView):
             else:
                 message = "Finished all stages of this question."
           
-                question.solved_count += 1
-                question.save()
+               # question.solved_count += 1
+               # question.save()
 
-                user_solved_question, created = UserSolvedQuestion.objects.get_or_create(
-                user=user, 
-                question=question
-                )
+               # user_solved_question, created = UserSolvedQuestion.objects.get_or_create(
+              #  user=user, 
+               # question=question
+               # )
 
 
-                user_solved_question.solve = True
-                user_solved_question.save()
+               # user_solved_question.solve = True
+               # user_solved_question.save()
 
-                user_score, created = UserScore.objects.get_or_create(
-                user=user, 
-                question=question
-                )
+               # user_score, created = UserScore.objects.get_or_create(
+              #  user=user, 
+               # question=question
+               # )
 
   
-                user_score.score += question.score if question.score else 0
-                user_score.save()
+                #user_score.score += question.score if question.score else 0
+                #user_score.save()
 
 
 
