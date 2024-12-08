@@ -25,7 +25,8 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = ['id', 'title', 'stages']
 
-
+class StageTestSerializer(serializers.ManyRelatedField):
+    pass
 
 
 

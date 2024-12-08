@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-p8nw6naizxx&=ku24=y$zh96h(y(ly$flo@2f&!=g0@v$#i43&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -160,20 +160,24 @@ CACHES = {
         }
     }
 }
+JWT_BLACKLIST_CACHE_ALIAS = 'default'
 
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=500), 
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7), 
     'ROTATE_REFRESH_TOKENS': False,  
-    'BLACKLIST_AFTER_ROTATION': False,  
+    'BLACKLIST_AFTER_ROTATION': True,  
     'ALGORITHM': 'HS256', 
     'SIGNING_KEY': SECRET_KEY,  
     'AUTH_HEADER_TYPES': ('Bearer',),  
     'USER_ID_FIELD': 'id',  
     'USER_ID_CLAIM': 'user_id',  
+    'BLACKLIST_TOKEN_TYPES': ('access', 'refresh'),
+
 }
 
 
 
 
+    

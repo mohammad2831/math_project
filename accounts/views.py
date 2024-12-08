@@ -153,10 +153,12 @@ class UserLoginView(APIView):
             password = ser_data.validated_data['password']         
             user = get_object_or_404(User, phone_number=phone)        
             if user.check_password(password):
-                token, created = Token.objects.get_or_create(user=user)
-                print(token.key)
+                refresh = RefreshToken.for_user(user)
 
-                return Response({'token': token.key, 'status': 202})
+                access_token = str(refresh.access_token)
+
+
+                return Response({'token': access_token, 'status': 202})
             else:
                 return Response({'error': 'Invalid credentials'}, status=400)
 
@@ -260,20 +262,44 @@ class UserRegisterView(APIView):
         return Response({"error": "Invalid data."}, status=400)
 
 
-
 class UserLogoutView(APIView):
+    authentication_classes = [JWTAuthentication]  
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
+        # استخراج توکن از هدر
+        authorization_header = request.headers.get('Authorization')
+        if not authorization_header:
+            return Response({"detail": "Authorization header missing."}, status=400)
+
+        parts = authorization_header.split()
+        if len(parts) != 2 or parts[0].lower() != 'bearer':
+            return Response({"detail": "Invalid authorization header."}, status=400)
+
+        access_token = parts[1]
+
         try:
-            token = Token.objects.get(user=request.user)
-            token.delete()
-            return Response({"detail": "Successfully logged out."})
-        except Token.DoesNotExist:
-            return Response({"detail": "Invalid token or user not logged in."}, status=400)
+            # اعتبارسنجی توکن
+            refresh_token = RefreshToken(access_token)
+        except TokenError as e:
+            return Response({"detail": f"Invalid token: {str(e)}"}, status=400)
+
+        # ذخیره توکن در کش (Redis)
+        redis = get_redis_connection('default')
+        redis.setex(f"blacklisted_{access_token}", 3600, access_token)  # ذخیره توکن به مدت 1 ساعت
+
+        return Response({"detail": "Successfully logged out."}, status=200)
+    
 
 
 
 
-'''
+
+
+
+
+    
+    '''
 class UserRegisterView(View):
     form_class = UserRegistrationForm
     def get(self, request):

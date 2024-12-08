@@ -23,6 +23,16 @@ class AllQuestionView(APIView):
 class QuestionView(APIView):
     #authentication_classes = [TokenAuthentication] 
     #permission_classes = [IsAuthenticated]
+    def get(self, request, id_q, id_s):
+        question = get_object_or_404(Question, id=id_q)
+        stage = Stage.objects.get(question=question, stage_number=1)
+        start_stage=StageSerializer(stage)
+        return Response({'stage': start_stage.data})
+
+
+
+
+
 
     def post(self, request, id_q, id_s):
        # user = User.objects.get(user=request.user)
@@ -42,7 +52,7 @@ class QuestionView(APIView):
 
             if next_stage:
                 next_stage_serializer = StageSerializer(next_stage)
-                return Response({'message': message,'next_stage': next_stage_serializer.data}, status=status.HTTP_200_OK)
+                return Response({'message': message,'stage': next_stage_serializer.data}, status=status.HTTP_200_OK)
             
 
             else:
