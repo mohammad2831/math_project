@@ -31,6 +31,8 @@ class QuestionView(APIView):
         return Response({'stage': start_stage.data, 'form':ser_data.data})
 
 
+
+
     def post(self, request, id_q, id_s):
        # user = User.objects.get(user=request.user)
         question = get_object_or_404(Question, id=id_q)
