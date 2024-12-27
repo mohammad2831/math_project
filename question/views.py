@@ -5,7 +5,7 @@ from accounts.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import QuestionSerializer , StageSerializer,AllQuestionSerializer, SelectQuestionSerializer
+from .serializers import QuestionSerializer , StageSerializer,AllQuestionSerializer, SelectQuestionSerializer,QuestionFormSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
@@ -25,18 +25,17 @@ class QuestionView(APIView):
     #permission_classes = [IsAuthenticated]
     def get(self, request, id_q, id_s):
         question = get_object_or_404(Question, id=id_q)
+        ser_data = QuestionFormSerializer(question)
         stage = Stage.objects.get(question=question, stage_number=1)
         start_stage=StageSerializer(stage)
-        return Response({'stage': start_stage.data})
-
-
-
-
+        return Response({'stage': start_stage.data, 'form':ser_data.data})
 
 
     def post(self, request, id_q, id_s):
        # user = User.objects.get(user=request.user)
         question = get_object_or_404(Question, id=id_q)
+        ser_data = QuestionFormSerializer(question)
+
         stage = Stage.objects.filter(question=question, stage_number=id_s).first()
 
         if not stage:
