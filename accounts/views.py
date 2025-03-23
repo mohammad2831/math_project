@@ -2,8 +2,9 @@ import random
 from utils import send_otp_code
 from . models import OtpCode, User
 from rest_framework.views import APIView
-from .serializers import UserRegisterSerializer, UserLoginSerializer, VerifyCodeSerializer, UserProfileSerializer, UserForgotpasswordSerializer, OtpResetPasswordSerializer, ResetPasswordSerializer
+from .serializers import UserRegisterSerializer, UserLoginSerializer, VerifyCodeSerializer, UserProfileSerializer, UserForgotpasswordSerializer, OtpResetPasswordSerializer, ResetPasswordSerializer, MyTokenObtainPairSerializer
 from rest_framework.response import Response
+
 from rest_framework.authtoken.models import Token
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -18,6 +19,102 @@ import jwt
 from .connections import get_redis_connection
 from django.core.cache import cache
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.contrib.auth import authenticate
+from question.models import UserProgress
+
+import requests
+
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+
+
+
+
+
+class UserRegisterVerifyCodeView(APIView):
+    def post(self, request):
+        ser_data = VerifyCodeSerializer(data=request.data)
+        if ser_data.is_valid():
+            otp_code = ser_data.validated_data['code']
+            user_data = cache.get(f'user_registration:{otp_code}')
+            cache.delete(f'user_registration:{otp_code}')
+            
+            if not user_data:
+                return Response({"error": "Invalid or expired OTP code."}, status=400)
+            
+            user = User.objects.create_user(
+                email=user_data['email'],
+                phone_number=user_data['phone_number'],
+                full_name=user_data['full_name'],
+                password=user_data['password']
+            )
+            
+            OtpCode.objects.filter(phone_number=user_data['phone_number']).delete()
+            
+       
+
+            server_host = request.get_host()  
+            protocol = "https" if request.is_secure() else "http"  
+            token_url = f"{protocol}://{server_host}/accounts/token/"  
+            
+           
+            data = {
+                'email': user.email,  
+                'password': user_data['password'],
+            }
+            headers = {'Content-Type': 'application/json'}
+            
+            try:
+                response = requests.post(token_url, json=data, headers=headers)
+                if response.status_code == 200:
+                    tokens = response.json()
+                    return Response({
+                        'access_token': tokens['access'],
+                        'refresh_token': tokens['refresh'],
+                        'status': 200
+                    }, status=200)
+                else:
+                    return Response({
+                        'error': 'Token generation failed',
+                        'details': response.json(),
+                    }, status=response.status_code)
+            except requests.exceptions.RequestException as e:
+                return Response({'error': f'Request failed: {e}'}, status=500)
+        
+        return Response({"error": "Invalid OTP code."}, status=400)
+
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        
+        token = super().get_token(user)
+        
+        token['phone_number'] = user.phone_number
+        token['full_name'] = user.full_name
+        token['email'] = user.email
+        token['score'] = user.score
+        
+        return token
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+
+
+
+
+class Test(APIView):
+    authentication_classes = [JWTAuthentication]  # احراز هویت با توکن JWT
+    permission_classes = [IsAuthenticated]
+ 
+    def get(self, request):
+        print("hiiiiiiiiiii")
+        return Response({'hi':'test is ok'})
+
+
 
 
 #reset and change the password
@@ -56,12 +153,8 @@ class OtpResetPasswordView(APIView):
 
         ser_data = OtpResetPasswordSerializer(data=request.data)
         if ser_data.is_valid():
-           
             code = ser_data.validated_data['code']
-
             try:
-                                
-              
                 if int(code) == code_instance.code:  
                     token, created = Token.objects.get_or_create(user=user)
                     print(token.key)
@@ -70,13 +163,7 @@ class OtpResetPasswordView(APIView):
                     return Response({'status': 407, 'message': 'Invalid code.'}, status=400)
             except OtpCode.DoesNotExist:
                 return Response({'status': 407, 'message': 'Phone number not found.'}, status=404)
-            
-
-
         return Response({'status': 407, 'message': 'Invalid data.'}, status=400)
-
-
-
 
 
 
@@ -100,21 +187,7 @@ class UserForgotpasswordView(APIView):
             OtpCode.objects.create(phone_number = ser_data.validated_data['phone'], code=random_code)
             return Response({'code':random_code,'status':201} )
 
-
         return Response(ser_data.errors, status=400)
-
-
-
-
-            
-
-
-
-
-
-
-
-
 
 
 
@@ -132,9 +205,6 @@ class UserProfileView(APIView):
         ser_data = UserProfileSerializer(user)
         return Response(ser_data.data, status=200)
     
-
-
-
     def put(self, request, *args, **kwargs):
         user = request.user
         serializer = UserProfileSerializer(user, data=request.data, partial=True) 
@@ -144,103 +214,111 @@ class UserProfileView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+
+
+
+
+
 class UserLoginView(APIView):
     def post(self, request):
         ser_data = UserLoginSerializer(data=request.data)
-        
-        if ser_data.is_valid():          
-            phone = ser_data.validated_data['phone_number']
-            password = ser_data.validated_data['password']         
-            user = get_object_or_404(User, phone_number=phone)        
-            if user.check_password(password):
-                refresh = RefreshToken.for_user(user)
+        print("heloo")
 
-                access_token = str(refresh.access_token)
-
-
-                return Response({'token': access_token, 'status': 202})
-            else:
-                return Response({'error': 'Invalid credentials'}, status=400)
-
-        return Response(ser_data.errors, status=400)
-
-
-
-class UserRegisterVerifyCodeView(APIView):
-    def post(self, request):
-        ser_data = VerifyCodeSerializer(data=request.data)
         if ser_data.is_valid():
-            otp_code = ser_data.validated_data['code']
-            user_data = cache.get(f'user_registration:{otp_code}')
-            user_cash = cache.delete(f'user_registration:{otp_code}')
+            phone_number = ser_data.validated_data['phone_number']
+            password = ser_data.validated_data['password']
+
+            user = get_object_or_404(User,phone_number=phone_number)
+            if user.check_password(password):
+
+                server_host = request.get_host()  
+                protocol = "https" if request.is_secure() else "http"  
+                token_url = f"{protocol}://{server_host}/accounts/token/"  
             
-            if not user_data:
-                return Response({"error": "Invalid or expired OTP code."}, status=400)
+           
+                data = {
+                    'email': user.email,  
+                    'password': password,
+                }
+                headers = {'Content-Type': 'application/json'}
+            
+                try:
+                    response = requests.post(token_url, json=data, headers=headers)
+                    if response.status_code == 200:
+                        tokens = response.json()
+                        return Response({
+                            'access_token': tokens['access'],
+                            'refresh_token': tokens['refresh'],
+                            'status': 200
+                        }, status=200)
+                    else:
+                        return Response({
+                            'error': 'Token generation failed',
+                            'details': response.json(),
+                        }, status=response.status_code)
+                except requests.exceptions.RequestException as e:
+                    return Response({'error': f'Request failed: {e}'}, status=500)
 
-            # ایجاد کاربر جدید
-            user = User.objects.create_user(
-                email=user_data['email'],
-                phone_number=user_data['phone_number'],
-                full_name=user_data['full_name'],
-                password=user_data['password']
-            )
 
-            OtpCode.objects.filter(phone_number=user_data['phone_number']).delete()
+            else:
+                return Response({"error": "Invalid phone number or password"}, status=400)
+        return Response({"error": "Invalid input data "}, status=400)
 
-            refresh = RefreshToken.for_user(user)
-            access_token = str(refresh.access_token)
+'''
 
-            return Response({'token': access_token, 'status': 200}, status=200)
+class UserLoginView(APIView):
+    def post(self, request):
+        ser_data = UserLoginSerializer(data=request.data)
 
-        return Response({"error": "Invalid OTP code."}, status=400)
+        if ser_data.is_valid():
+            phone = ser_data.validated_data['phone_number']
+            password = ser_data.validated_data['password']
+            user = get_object_or_404(User, phone_number=phone)
 
+            if user.check_password(password):
+                server_host = request.get_host()  
+            protocol = "https" if request.is_secure() else "http"  
+            token_url = f"{protocol}://{server_host}/accounts/token/"  
+            
+           
+            data = {
+                'phone_number': user.phone_number, 
+                'password': user.password,
+                
+
+            }
+            headers = {'Content-Type': 'application/json'}
+            
+            try:
+                response = requests.post(token_url, json=data, headers=headers)
+                if response.status_code == 200:
+                    tokens = response.json()
+                    return Response({
+                        'access_token': tokens['access'],
+                        'refresh_token': tokens['refresh'],
+                        'status': 200
+                    }, status=200)
+                else:
+                    return Response({
+                        'error': 'Token generation failed',
+                        'details': response.json(),
+                    }, status=response.status_code)
+            except requests.exceptions.RequestException as e:
+                return Response({'error': f'Request failed: {e}'}, status=500)
+        else:
+            return Response({"error": "Invalid password"}, status=400)
         
 '''
-        # بررسی معتبر بودن توکن
-        try:
-            # تلاش برای دیکد کردن توکن
-            access_token = AccessToken(token)
-        except TokenError:
-            return Response({"error": "Invalid or expired token."}, status=400)
-
-        # بررسی زمان انقضا توکن
-        access_token.check_exp()
-        email= access_token.get('email'),
-        full_name = access_token.get('full_name'),
-        phone_number = access_token.get('phone_number')
-
-        if not email or not full_name or not phone_number:
-            return Response({"error": "Token data is missing or invalid."}, status=400)
-        # استخراج اطلاعات کاربر از توکن
-        user_data = {
-            'email': access_token.get('email'),
-            'full_name': access_token.get('full_name'),
-            'phone_number': access_token.get('phone_number')
-        }
-        return Response({"data": user_data }, status=200)
+        
 
 
-'''
 
 
-'''
 
-def generate_temp_token(user_data):
-    # ایجاد توکن دسترسی
-    # داده‌ها را به صورت payload به توکن اضافه می‌کنیم
-    payload = {
-        'email': user_data['email'],
-        'full_name': user_data['full_name'],
-        'phone_number': user_data['phone_number'],
-        'password': user_data['password'],
-       
-    }
-    
-    # رمزنگاری توکن را حذف می‌کنیم
-    token = jwt.encode(payload, 'secret_key', algorithm='HS256')
 
-    return token
-'''
+
+
 
 class UserRegisterView(APIView):
     def post(self, request):
@@ -262,12 +340,13 @@ class UserRegisterView(APIView):
         return Response({"error": "Invalid data."}, status=400)
 
 
+
+
 class UserLogoutView(APIView):
     authentication_classes = [JWTAuthentication]  
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        # استخراج توکن از هدر
         authorization_header = request.headers.get('Authorization')
         if not authorization_header:
             return Response({"detail": "Authorization header missing."}, status=400)
@@ -279,12 +358,10 @@ class UserLogoutView(APIView):
         access_token = parts[1]
 
         try:
-            # اعتبارسنجی توکن
             refresh_token = RefreshToken(access_token)
         except TokenError as e:
             return Response({"detail": f"Invalid token: {str(e)}"}, status=400)
 
-        # ذخیره توکن در کش (Redis)
         redis = get_redis_connection('default')
         redis.setex(f"blacklisted_{access_token}", 3600, access_token)  # ذخیره توکن به مدت 1 ساعت
 
@@ -293,91 +370,4 @@ class UserLogoutView(APIView):
 
 
 
-
-
-
-
-
-    
-    '''
-class UserRegisterView(View):
-    form_class = UserRegistrationForm
-    def get(self, request):
-        form = self.form_class
-        return render(request, 'accounts/register.html', {'form':form})
-    
-    def post(self, request):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            random_code = random.randint(1000, 9999)
-            send_otp_code(form.cleaned_data['phone'], random_code)
-            OtpCode.objects.create(phone_number = form.cleaned_data['phone'], code=random_code)
-
-            request.session['user_registration_info'] = {
-                'email' : form.cleaned_data['email'],
-                'phone_number' : form.cleaned_data['phone'],
-                'full_name' : form.cleaned_data['full_name'],
-                'password' : form.cleaned_data['password'],
-            }
-            messages.success(request, 'we send you a code ', 'success')
-            return redirect('accounts:user_register_verify_code')
-        return render(request,'accounts/register.html', {'form':form})
-
-'''
-'''
-class UserRegisterVerifyCodeView(View):
-    form_class = VerifyCodeForm
-    def get(self, request):
-        form = self.form_class
-        return render(request, 'accounts/verify.html', {'form':form})
-        
-    def post(self, request):
-        user_session=request.session['user_registration_info']
-        code_instance = OtpCode.objects.get(phone_number=user_session['phone_number'])
-
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            if cd['code'] == code_instance.code:
-                User.objects.create_user(user_session['email'], user_session['phone_number'], 
-                                        user_session['full_name'], user_session['password'])
-                
-                code_instance.delete()
-                messages.success(request, 'you registered .' 'success')
-                return redirect('web:home')
-            
-            else:
-                messages.error(request, 'code is wrong', 'danger')
-                return redirect('accounts:user_register_verify_code')
-            
-        return redirect('web:home')
-'''    
-
-'''
-
-class UserLoginView(View):
-    form_class= UserLoginForm
-
-    def get(self, request):
-        form = self.form_class
-        return render(request, 'accounts/login.html', {'form':form})
-
-    def post(self, request):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            user = authenticate(request, email=cd['email'], password=cd['password'])
-            if user is not None:
-                login(request, user)
-                messages.success(request, 'you logged in succes ', 'success')
-                return redirect('web:home')
-            
-            messages.error(request,'email or password is wrong', 'danger')
-
-        return render(request,'accounts/login.html', {'form':form})
-
-
-'''
-
-        
 

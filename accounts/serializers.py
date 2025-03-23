@@ -1,5 +1,51 @@
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from .models import User
+from question .models import UserProgress
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
+
+
+
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # اضافه کردن فیلدهای دلخواه به توکن
+        token['phone_number'] = user.phone_number
+        token['full_name'] = user.full_name
+        token['email'] = user.email
+        # می‌توانید فیلدهای دیگر را هم اضافه کنید
+
+        return token
+
+class UserLoginSerializer(serializers.Serializer):
+    phone_number = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -40,9 +86,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ['email', 'full_name', 'phone_number', 'profile_img']
 
 
-class UserLoginSerializer(serializers.Serializer):
-    phone_number = serializers.CharField()
-    password = serializers.CharField(write_only=True)
+
 
 
 

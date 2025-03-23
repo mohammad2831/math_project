@@ -14,7 +14,7 @@ def clean_profile_picture(self):
         return None
 
 '''
-
+'''
 import os
 import base64
 from PIL import Image
@@ -38,3 +38,4 @@ def image_to_base64(image_file):
     image.save(buffered, format=image_format)
     img_str = base64.b64encode(buffered.getvalue()).decode()
     return img_str
+'''

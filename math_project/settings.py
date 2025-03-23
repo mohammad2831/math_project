@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'question.apps.QuestionConfig',
     'home.apps.HomeConfig',
-
+    'app.apps.AppConfig',
+    'rest_framework_simplejwt',
     'rest_framework.authtoken',
     'corsheaders',
 
@@ -151,6 +152,8 @@ REDIS_HOST = 'localhost'  # اگر Redis روی سرور محلی شما اجر�
 REDIS_PORT = 6379         # پورتی که Redis روی آن اجرا می‌شود
 REDIS_DB = 0 
 
+
+
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
@@ -160,24 +163,38 @@ CACHES = {
         }
     }
 }
+
+
+REST_FRAMEWORK = {
+    
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    
+
+}
+
+
+
 JWT_BLACKLIST_CACHE_ALIAS = 'default'
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=500), 
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=2), 
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7), 
     'ROTATE_REFRESH_TOKENS': False,  
     'BLACKLIST_AFTER_ROTATION': True,  
     'ALGORITHM': 'HS256', 
     'SIGNING_KEY': SECRET_KEY,  
     'AUTH_HEADER_TYPES': ('Bearer',),  
-    'USER_ID_FIELD': 'id',  
+    
+    'USER_ID_FIELD': 'phone_number',  
+    
     'USER_ID_CLAIM': 'user_id',  
     'BLACKLIST_TOKEN_TYPES': ('access', 'refresh'),
-
+    "TOKEN_OBTAIN_SERIALIZER": "accounts.serializers.MyTokenObtainPairSerializer",
 }
 
 
 
-
-    

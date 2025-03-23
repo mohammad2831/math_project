@@ -24,6 +24,10 @@ class UserProfileForm(forms.ModelForm):
         return None
 
 
+
+
+
+
 class StageAdminForms(forms.ModelForm):
     model = Stage
     fields = [

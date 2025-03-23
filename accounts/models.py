@@ -33,6 +33,13 @@ class User(AbstractBaseUser):
     def is_staff(self):
         return self.is_admin
     
+    @property
+    def score(self):
+        progress = self.progress.first()  # فرض بر این است که هر کاربر فقط یک پیشرفت در هر دسته دارد
+        return progress.score if progress else 0  
+
+
+
 
 class OtpCode(models.Model):
     phone_number=models.CharField(max_length=11)
