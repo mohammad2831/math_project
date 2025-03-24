@@ -1,2 +1,29 @@
 
 
+POST http://127.0.0.1:8000/accounts/register/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "test@example.com",
+  "phone_number": "09123456789",
+  "full_name": "Test User",
+  "password": "securepassword"
+}
+
+
+########
+
+POST http://127.0.0.1:8000/accounts/verify/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "code": 2993
+}
+
+###
+
+GET http://127.0.0.1:8000/question-app/13/
+Content-Type: application/json
+Accept: application/json

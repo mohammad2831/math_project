@@ -180,7 +180,7 @@ class SelectQuestionView(APIView):
             cache.set(
                 key=cache_key,
                 value=json.dumps(serialized_data),
-                timeout=3600
+                timeout=40
             )
             
             return Response(serialized_data)

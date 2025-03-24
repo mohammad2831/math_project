@@ -10,7 +10,7 @@ class StageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stage
         fields = [
-            'id', 'stage_number', 
+             'stage_number', 
             'option1_title', 'option1_latex', 'option1_descrption',
             'option2_title', 'option2_latex', 'option2_descrption',
             'option3_title', 'option3_latex', 'option3_descrption',
@@ -33,16 +33,12 @@ class SelectQuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = ['title', 'difficulty', 'score', 'question_latex', 'description']
 
+
+
+
 class AllQuestionSerializer(serializers.ModelSerializer):
     is_solved = serializers.SerializerMethodField()
 
     class Meta:
         model = Question
-        fields = ['id', 'title', 'difficulty', 'question_latex', 'is_solved']
-'''
-    def get_is_solved(self, obj):
-        user = self.context['request'].user
-        if user.is_authenticated:
-            return UserSolvedQuestion.objects.filter(user=user, question=obj).exists()
-        return False'
-        '''
+        fields = ['id', 'title', 'difficulty', 'question_latex']

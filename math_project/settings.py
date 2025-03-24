@@ -62,6 +62,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 
+
+     'question. gzip_middleware.GZipAPIResponseMiddleware',
+
 ]
 
 ROOT_URLCONF = 'math_project.urls'
@@ -171,6 +174,7 @@ REST_FRAMEWORK = {
         
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_CONTENT_ENCODING':'gzip'
     
 
 }
