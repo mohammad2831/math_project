@@ -7,8 +7,7 @@ import re
 
 class GZipAPIResponseMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
-        print("hi")
-     
+    
 
         if re.match(r'^/question-app/\d+/$', request.path):
             

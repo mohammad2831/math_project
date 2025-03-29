@@ -1,74 +1,30 @@
-'''from kavenegar import *'''
-
-def send_otp_code(phone_number, code):
-    pass
-'''
-    try:
-        api = KavenegarAPI('62572B316B5464595767584E7A30645156626D7538426B68515963346436777A43657875314133683178493D')
-        params = {
-            'sender': '',
-            'receptor': phone_number,
-            'message': f'کد تایید شما برای ورود به *** {code}'
-        }
-
-        response = api.sms_send(params)
-        print("Response:", response)
-    except APIException as e:
-        print(f"APIException: {e}")
-    except HTTPException as e:
-        print(f"HTTPException: {e}")
-
-# نمونه استفاده
-
-
-class PaymentView(View):
-    def post(self, request, order_id):
-
-
-
-        
-        data = {
-            'UserName': 
-            'Password': 
-            'Mobile': 
-            'CodeLength': 
-            'OptionalCode':
-        }
-        
-        response = requests.post('https://panel.aqayepardakht.ir/api/v2/create', data=data)
-        json_data = json.loads(response.text)
-
-        if response.status_code == 200 and json_data.get('status') == 'success':
-            transid = json_data.get('transid')
-            if transid:
-                return redirect(f'https://panel.aqayepardakht.ir/startpay/sandbox/{transid}')
-      
-        return render(request, 'orders/load.html')
-
-
-
-
 import requests
+from django.conf import settings
 
-# Define the API URL
-url = "https://portal.amootsms.com/rest/SendSimple"
+class KavenegarSMS:
+    API_URL = "https://api.kavenegar.com/v1/{api_key}/sms/send.json"
 
-# Prepare the payload data
-payload = {
-    'token': 'xxxx',
-    'Mobiles': '091xxxx',
-    'SendDateTime': '0',
-    'SMSMessageText': 'xxxx',
-    'LineNumber': 'Public'
-}
+    def __init__(self):
+        self.api_key = '7A596E7A7163534C667836493676706D484674715A54356C3631662F6C646D48396E4E564D6D3757522F553D'
 
-# Set the request headers
-headers = {
-    'Content-Type': 'application/x-www-form-urlencoded'
-}
-
-# Send the POST request
-response = requests.post(url, headers=headers, data=payload)
-
-# Print the response text
-print(response.text)'''
+    def send_sms(self, receptor, message):
+        """
+        ارسال پیامک با استفاده از API کاوه نگار
+        :param receptor: شماره گیرنده (مثال: '09123456789')
+        :param message: متن پیامک (مثال: 'کد تایید شما: 123456')
+        :return: پاسخ JSON از API کاوه نگار
+        """
+        url = self.API_URL.format(api_key=self.api_key)
+        payload = {
+            "receptor": receptor,
+            "message": message
+        }
+        try:
+            response = requests.post(url, data=payload)
+            response_data = response.json()
+            if response.status_code == 200 and response_data.get("return", {}).get("status") == 200:
+                return response_data
+            else:
+                return {"error": response_data}
+        except requests.exceptions.RequestException as e:
+            return {"error": str(e)}

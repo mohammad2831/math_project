@@ -8,7 +8,7 @@ urlpatterns =[
    path('<int:id_q>/<int:id_s>/', views_app.QuestionView.as_view(),name='question_view'),
 
 
-   path('test', views_app.test.as_view(), name="test")
+   path('test/', views_app.test.as_view(), name="test")
 
 ]
 

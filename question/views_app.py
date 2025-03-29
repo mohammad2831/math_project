@@ -16,7 +16,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 
 class test(APIView):
-    pass
+    authentication_classes = [TokenAuthentication] 
+    permission_classes = [IsAuthenticated]
+    def get (self, request):
+        print("test is okkkk")
 
 class AllQuestionView(APIView):
 
@@ -95,11 +98,11 @@ class QuestionView(APIView):
 
         
         cache_key = f"question_{id_q}"  # کلید یکتا برای ذخیره در Redis
-        cached_data = cache.get(cache_key)  # تلاش برای گرفتن داده از کش
+        cached_data = cache.get(cache_key)  #try for get data from redis 
 
         
 
-        # اگر داده در کش نبود، از دیتابیس بگیر و ذخیره کن
+        # if data not been in redis cashe it from sql
         question = get_object_or_404(Question, id=id_q)
         ser_data = QuestionFormSerializer(question).data
         

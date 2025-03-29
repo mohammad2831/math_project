@@ -26,5 +26,7 @@ urlpatterns =[
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
    path('test/', views.Test.as_view(), name='test_jwt'),
+
+   path('testotp/', views.testOtp.as_view(), name='testotp'),
     
 ]

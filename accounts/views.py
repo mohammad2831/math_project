@@ -1,5 +1,4 @@
 import random
-from utils import send_otp_code
 from . models import OtpCode, User
 from rest_framework.views import APIView
 from .serializers import UserRegisterSerializer, UserLoginSerializer, VerifyCodeSerializer, UserProfileSerializer, UserForgotpasswordSerializer, OtpResetPasswordSerializer, ResetPasswordSerializer, MyTokenObtainPairSerializer
@@ -26,7 +25,26 @@ import requests
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from utils import KavenegarSMS
 
+
+class testOtp(APIView):
+    def post(self, request):
+        phone_number = request.data.get("phone_number")
+        if not phone_number:
+            return Response({"error": "شماره موبایل الزامی است."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # تولید کد OTP تصادفی ۶ رقمی
+        otp_code = str(random.randint(100000, 999999))
+        message = f"کد تایید شما: {otp_code}"
+
+        sms_service = KavenegarSMS()
+        response = sms_service.send_sms(phone_number, message)
+
+        if "error" in response:
+            return Response({"error": "ارسال پیامک ناموفق بود."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({"message": "کد تایید ارسال شد.", "otp": otp_code}, status=status.HTTP_200_OK)
 
 
 
@@ -52,13 +70,10 @@ class UserRegisterVerifyCodeView(APIView):
             
             OtpCode.objects.filter(phone_number=user_data['phone_number']).delete()
             
-       
-
             server_host = request.get_host()  
             protocol = "https" if request.is_secure() else "http"  
             token_url = f"{protocol}://{server_host}/accounts/token/"  
             
-           
             data = {
                 'email': user.email,  
                 'password': user_data['password'],
@@ -103,9 +118,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 
-
-
-
+#test clss for test authentication and authrization
 class Test(APIView):
     authentication_classes = [JWTAuthentication]  # احراز هویت با توکن JWT
     permission_classes = [IsAuthenticated]
@@ -265,60 +278,8 @@ class UserLoginView(APIView):
                 return Response({"error": "Invalid phone number or password"}, status=400)
         return Response({"error": "Invalid input data "}, status=400)
 
-'''
 
-class UserLoginView(APIView):
-    def post(self, request):
-        ser_data = UserLoginSerializer(data=request.data)
-
-        if ser_data.is_valid():
-            phone = ser_data.validated_data['phone_number']
-            password = ser_data.validated_data['password']
-            user = get_object_or_404(User, phone_number=phone)
-
-            if user.check_password(password):
-                server_host = request.get_host()  
-            protocol = "https" if request.is_secure() else "http"  
-            token_url = f"{protocol}://{server_host}/accounts/token/"  
-            
-           
-            data = {
-                'phone_number': user.phone_number, 
-                'password': user.password,
-                
-
-            }
-            headers = {'Content-Type': 'application/json'}
-            
-            try:
-                response = requests.post(token_url, json=data, headers=headers)
-                if response.status_code == 200:
-                    tokens = response.json()
-                    return Response({
-                        'access_token': tokens['access'],
-                        'refresh_token': tokens['refresh'],
-                        'status': 200
-                    }, status=200)
-                else:
-                    return Response({
-                        'error': 'Token generation failed',
-                        'details': response.json(),
-                    }, status=response.status_code)
-            except requests.exceptions.RequestException as e:
-                return Response({'error': f'Request failed: {e}'}, status=500)
-        else:
-            return Response({"error": "Invalid password"}, status=400)
         
-'''
-        
-
-
-
-
-
-
-
-
 
 class UserRegisterView(APIView):
     def post(self, request):
