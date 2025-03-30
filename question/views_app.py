@@ -4,22 +4,25 @@ from accounts.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import QuestionSerializer , StageSerializer,AllQuestionSerializer, SelectQuestionSerializer,QuestionFormSerializer
+from .serializers import QuestionSerializer ,CorectOptionSerializer, StageSerializer,AllQuestionSerializer, SelectQuestionSerializer,QuestionFormSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from django.core.cache import cache
 import json
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 
 
 from django.shortcuts import render, get_object_or_404, redirect
 
 
 class test(APIView):
-    authentication_classes = [TokenAuthentication] 
+    authentication_classes = [JWTAuthentication]  # احراز هویت با توکن JWT
     permission_classes = [IsAuthenticated]
     def get (self, request):
         print("test is okkkk")
+        return Response({"message":"ok"})
 
 class AllQuestionView(APIView):
 
@@ -147,51 +150,63 @@ class QuestionView(APIView):
               
 
 
-'''
-class SelectQuestionView(APIView):
-    def get(self,request, id_q):
-        cache_key = f"{id_q}" 
-        cached_data = cache.get(cache_key)
-        
-        if cached_data:
-            ser_data = cached_data
-        else:
-            question = get_object_or_404(Question, id=id_q)
-            ser_data = SelectQuestionSerializer(question).data
-            cache.set(cache_key, ser_data, timeout=1200)  
-            print(ser_data)
-        
-       
-        return Response(ser_data)
-'''
 
 class SelectQuestionView(APIView):
+# authentication_classes = [JWTAuthentication]
+#    permission_classes = [IsAuthenticated]
+
     def get(self, request, id_q):
-        cache_key = f"{id_q}"
-        cached_data = cache.get(cache_key)
+        print(f"User ID: {request.user.id}")
 
-        if cached_data:
-            print("get data from REDIS")
-            return Response(json.loads(cached_data))
+        def add_qustion_to_redis():
+            cache_key = f"{id_q}:question"
+            cached_data = cache.get(cache_key)
 
-        try:
-            print("get data from SQL")
-            question = Question.objects.prefetch_related('stages').get(id=id_q)
-            serialized_data = QuestionSerializer(question).data
-
-            #add to Redis
-            cache.set(
-                key=cache_key,
-                value=json.dumps(serialized_data),
-                timeout=40
-            )
+            if cached_data:
+                print("REDIS")
+                return Response(json.loads(cached_data))
             
-            return Response(serialized_data)
-            
-        except Question.DoesNotExist:
-            return Response(
-                {"error": "question not found"}, 
-                status=status.HTTP_404_NOT_FOUND
-            )
+            try:
+                print("(SQL)")
+
+                
+                question = Question.objects.prefetch_related('stages').get(id=id_q)
+                serialized_data = QuestionSerializer(question).data
 
 
+                serialized_corect_option = CorectOptionSerializer(question.stages, many=True).data
+                print(serialized_corect_option)
+
+                # ذخیره در REDIS
+                cache.set(
+                    key=cache_key,
+                    value=json.dumps(serialized_data),
+                    timeout=400
+                )
+
+                cache_key = f"{id_q}:correct"
+    
+    # ذخیره لیست به عنوان یک رشته JSON
+                cache.set(cache_key, json.dumps(serialized_corect_option), timeout=400)
+
+                # ذخیره داده برای کاربر خاص
+               
+
+                return Response(serialized_data)
+
+            except Question.DoesNotExist:
+                return Response(
+                    {"error": "question not found"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+        
+    
+        def analize():
+            print("")
+
+        # ابتدا تحلیل انجام شود
+        analize()
+        
+        # سپس داده از Redis/SQL دریافت شود
+        return add_qustion_to_redis()

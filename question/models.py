@@ -87,7 +87,7 @@ class Roadmap(models.Model):
     name = models.CharField(max_length=15) 
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    order = models.PositiveIntegerField()  
+    order = models.PositiveIntegerField()  #ترتیب سوال در road map
 
     def __str__(self):
         return f'{self.category} - {self.name}'
@@ -96,12 +96,23 @@ class Roadmap(models.Model):
 
 class UserProgress(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='progress')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)  # ذخیره پیشرفت در هر 
-    roadmap = models.ForeignKey(Roadmap, on_delete=models.CASCADE,null=True, blank=True)
-    last_question = models.ForeignKey(Question, on_delete=models.SET_NULL, null=True, blank=True)  # آخرین سوال حل شده
-    completed_questions = models.ManyToManyField(Question, related_name='completed_by_users', blank=True)  # سوالات حل شده
-    score = models.IntegerField(default=0)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)  # ذخیره پیشرفت در هر دسته‌بندی
+    last_question = models.PositiveIntegerField(null=True, blank=True)  # شماره آخرین سوال حل شده
+    completed_question_orders = models.JSONField(default=list)  # لیستی از شماره سؤالات حل‌شده
+    score = models.PositiveIntegerField(default=0)
+
+    def add_completed_question(self, question):
+        """افزودن شماره‌ی سوال حل‌شده به لیست"""
+        roadmap_entry = Roadmap.objects.filter(question=question, category=self.category).first()
+        if roadmap_entry:
+            # به‌روزرسانی مقدار `last_question_order`
+            self.last_question_order = roadmap_entry.order
+            
+            # اضافه کردن شماره سوال به لیست اگر از قبل وجود نداشته باشد
+            if roadmap_entry.order not in self.completed_question_orders:
+                self.completed_question_orders.append(roadmap_entry.order)
+
+            self.save(update_fields=['last_question_order', 'completed_question_orders'])
+
     def __str__(self):
-        return f'{self.user} - {self.category} - {self.last_question} - {self.score}'
-
-
+        return f'{self.user} - {self.category} - Last Q: {self.last_question_order} - Score: {self.score}'

@@ -116,7 +116,6 @@ class UserProgressAdmin(admin.ModelAdmin):
     list_display = ('user', 'category', 'last_question', 'score')  # نمایش فیلدهای اصلی
     list_filter = ('category', 'user')  # امکان فیلتر بر اساس کاربر و دسته‌بندی
     search_fields = ('user__email', 'category__category_name')  # جستجو بر اساس ایمیل کاربر و نام دسته‌بندی
-    filter_horizontal = ('completed_questions',)  # نمایش زیباتر برای انتخاب چند سوال حل شده
-
+   
 admin.site.register(Question,QuestionAdmin)
 admin.site.register(Stage,StageAdmin)

@@ -27,6 +27,24 @@ class QuestionSerializer(serializers.ModelSerializer):
             'id', 'title', 'question_latex', 'description', 
             'stage', 'score', 'difficulty', 'stages'
         ]
+    
+
+
+
+class CorectOptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stage
+        fields = [
+            'correct_option'
+        ]
+    def to_representation(self, instance):
+        # تبدیل خروجی به یک لیست از مقادیر صحیح
+        return int(instance.correct_option) 
+    
+
+
+
+
 
 class SelectQuestionSerializer(serializers.ModelSerializer):
     class Meta:
