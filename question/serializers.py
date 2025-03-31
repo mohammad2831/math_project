@@ -64,3 +64,9 @@ class AllQuestionSerializer(serializers.ModelSerializer):
 
 class GetAnswerSerializer(serializers.Serializer):
     answer = serializers.IntegerField() 
+
+
+class UserStatusTableSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+    user_name =serializers.CharField()
+    id_q =serializers.IntegerField() 
