@@ -60,3 +60,7 @@ class AllQuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = ['id', 'title', 'difficulty', 'question_latex']
+
+
+class GetAnswerSerializer(serializers.Serializer):
+    answer = serializers.IntegerField() 

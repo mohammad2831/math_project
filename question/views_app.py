@@ -4,7 +4,7 @@ from accounts.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import QuestionSerializer ,CorectOptionSerializer, StageSerializer,AllQuestionSerializer, SelectQuestionSerializer,QuestionFormSerializer
+from .serializers import QuestionSerializer ,GetAnswerSerializer,CorectOptionSerializer, StageSerializer,AllQuestionSerializer, SelectQuestionSerializer,QuestionFormSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
@@ -31,6 +31,29 @@ class AllQuestionView(APIView):
 
         serializer = AllQuestionSerializer(questions, many=True, context={'request': request})
         return Response(serializer.data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class QuestionView(APIView):
@@ -68,86 +91,57 @@ class QuestionView(APIView):
         return Response({'stage': stage_data, 'form': ser_data})
 
 
-    '''
-    def get(self, request, id_q, id_s):
-        cache_key = f"{id_q}" 
-        cached_data = cache.get(cache_key)  
-
-        if cached_data:
-            ser_data = cached_data
-
-        else:
-            question = get_object_or_404(Question, id=id_q)
-            ser_data = QuestionFormSerializer(question).data            
-            ser_data_json = json.dumps(ser_data)  
-            cache.set(cache_key, ser_data_json, timeout=1200)  
-
-
-        stage = cache.get(cache_key, id_s=1)
-        start_stage = StageSerializer(stage).data
-        return Response({'stage': start_stage, 'form':ser_data})
-
-    '''
 
     def post(self, request, id_q, id_s):
-
-
-        '''
-        question = get_object_or_404(Question, id=id_q)
-        #add to redis after for all logic use reddis
-        ser_data = QuestionFormSerializer(question)
-        '''
-
-
-        
-        cache_key = f"question_{id_q}"  # کلید یکتا برای ذخیره در Redis
-        cached_data = cache.get(cache_key)  #try for get data from redis 
-
-        
-
-        # if data not been in redis cashe it from sql
-        question = get_object_or_404(Question, id=id_q)
-        ser_data = QuestionFormSerializer(question).data
-        
-        cache.set(cache_key, ser_data, timeout=1200)
-
-
-
-
-
-
-        stage = Stage.objects.filter(question=question, stage_number=id_s).first()
-
-        if not stage:
-            return Response({'error': 'Stage not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        selected_option = request.data.get('option')
-        correct_option = str(stage.correct_option)
-
-        if selected_option == correct_option:
-            message = "Correct option"
-            next_stage = Stage.objects.filter(question=question, stage_number=id_s + 1).first()
-
-
-            if next_stage:
-                next_stage_serializer = StageSerializer(next_stage)
-                return Response({'message': message,'stage': next_stage_serializer.data}, status=status.HTTP_200_OK)
+        answer = GetAnswerSerializer(data=request.data)
+        if answer.is_valid():
+            cache_key = f"{id_q}:correct"
+            cached_data = cache.get(cache_key)
             
+            if cached_data:
+                try:
+                    cached_data = json.loads(cached_data)
+                
+                    print(cached_data[1])  
 
+                    print(cached_data)
+                    if cached_data[id_s - 1] == answer.validated_data['answer']:
+                        print("correct")
+                        return Response({"message": "correct"}, status=200)
+                    else:
+                        print("incorrect")
+                        return Response({"message": "incorrect"}, status=200)
+                    
+
+
+                    
+
+                except json.JSONDecodeError:
+                    return Response({"error": "Unable to decode cached data"}, status=400)
             else:
-                message = "Finished all stages of this question."
-          
-                return Response({'message': message}, status=status.HTTP_200_OK)
-        
-        else:
-            message = "Incorrect answer, please try again."
-            #get description of stage and serializer it and send with request
-            return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
-        
-            #add logic score option
-            #chalnge for any user calcute the score for any stage
-            #add score logic on redis
-              
+                return Response({"error": "Data not found in cache"}, status=404)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -187,7 +181,11 @@ class SelectQuestionView(APIView):
                 cache_key = f"{id_q}:correct"
     
     # ذخیره لیست به عنوان یک رشته JSON
-                cache.set(cache_key, json.dumps(serialized_corect_option), timeout=400)
+                cache.set(
+                    cache_key,
+                    json.dumps(serialized_corect_option), 
+                    timeout=400
+                    )
 
                 # ذخیره داده برای کاربر خاص
                
@@ -202,11 +200,7 @@ class SelectQuestionView(APIView):
 
         
     
-        def analize():
-            print("")
-
-        # ابتدا تحلیل انجام شود
-        analize()
+       
         
         # سپس داده از Redis/SQL دریافت شود
         return add_qustion_to_redis()
