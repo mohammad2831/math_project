@@ -37,6 +37,21 @@ class User(AbstractBaseUser):
     def score(self):
         progress = self.progress.first()  # فرض بر این است که هر کاربر فقط یک پیشرفت در هر دسته دارد
         return progress.score if progress else 0  
+    
+
+    #get last question for each roadmap for add it in payload jwt token and use it in solve question logic
+    #get last qustion in integral roadmap
+    @property
+    def last_question_integral(self):
+        progress = self.progress.filter(category="1").first()  
+        return progress.last_question if progress else 0 
+
+    #get last qustion in derivative roadmap
+    @property
+    def last_question_derivative(self):
+        progress = self.progress.filter(category="2").first()  
+        return progress.last_question if progress else 0 
+
 
 
 

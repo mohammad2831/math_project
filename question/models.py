@@ -115,4 +115,4 @@ class UserProgress(models.Model):
             self.save(update_fields=['last_question_order', 'completed_question_orders'])
 
     def __str__(self):
-        return f'{self.user} - {self.category} - Last Q: {self.last_question_order} - Score: {self.score}'
+        return f'{self.user} - {self.category} - Last Q: {self.last_question} - Score: {self.score}'

@@ -111,6 +111,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['full_name'] = user.full_name
         token['email'] = user.email
         token['score'] = user.score
+        token['last-question-integral'] = user.last_question_integral
+        token['last-question-derivative'] = user.last_question_derivative
         
         return token
 
@@ -126,6 +128,11 @@ class Test(APIView):
     def get(self, request):
         print("hiiiiiiiiiii")
         return Response({'hi':'test is ok'})
+
+
+
+
+
 
 
 

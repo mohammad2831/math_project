@@ -1,5 +1,5 @@
 from django.views import View
-from .models import Question,Stage
+from .models import Question,Stage, UserProgress
 from accounts.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -22,7 +22,24 @@ class test(APIView):
     permission_classes = [IsAuthenticated]
     def get (self, request):
         print("test is okkkk")
-        return Response({"message":"ok"})
+        #return Response({"message":"ok"})
+        user = request.user  # اطلاعات کاربر
+        token_payload = request.auth  # اطلاعات کامل JWT
+        #get data for integral category
+        integral = UserProgress.objects.filter(user=request.user, category=1).first()
+        #get data for derivative category
+        derivative= UserProgress.objects.filter(user=request.user, category=2).first()
+        
+
+        print("progress", integral)
+        print("progress", derivative)
+
+        return Response({
+            "user_id": user.id,
+            "email": user.email,
+            
+           # "jwt_payload": token_payload  # اینجا محتوای کامل توکن را داری
+        })
 
 class AllQuestionView(APIView):
 
