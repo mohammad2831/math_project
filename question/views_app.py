@@ -119,6 +119,7 @@ class QuestionView(APIView):
     authentication_classes = [JWTAuthentication] 
     permission_classes = [IsAuthenticated]
 
+
     def get(self, request, id_q, id_s):
         question_cache_key = f"question_{id_q}" 
         cached_question_data = cache.get(question_cache_key)
@@ -151,14 +152,17 @@ class QuestionView(APIView):
         return Response({'stage': stage_data, 'form': ser_data})
 
 
-
-
-
     #check if answer is correct or not
     #and add it in user status table
     #key in redis is :1:user_status:user-id:question-is
     #and add it in progress list
     def post(self, request, id_q, id_s):
+
+
+        self.calcute_score(request, id_q)
+
+
+
         user = request.user
         
         # answer user send it    
@@ -181,6 +185,10 @@ class QuestionView(APIView):
                     
                         #check if answer is correct or not
                         if cached_data_correct_option_load[id_s - 1] == answer.validated_data['answer']:
+
+                            #check if all question is solved and add score
+                            if id_s == len(cached_data_correct_option_load):
+                                self.calcute_score(request, id_q) 
 
                             #add correct answer in user status table , progress list with 1
                             cached_data_user_status_load['progress_list'].append("1")
@@ -214,11 +222,34 @@ class QuestionView(APIView):
                     except json.JSONDecodeError:
                         return Response({"error": "Unable to decode cached data"}, status=400)
                 else:
-                    return Response({"error": "Data not found in cache"}, status=409)    
+                    return Response({"error": "problem in correct option"}, status=409)    
             else:
-                return Response({"error": "Data not found in cache"}, status=408)
+                return Response({"error": "problem in user status table"}, status=408)
+            
 
+    #claculte score for user whe all question is solved
+    def calcute_score(self, request, id_q):
+        user=request.user
 
+        #fetch user status list in redis with user id
+        cache_key_user = f"user_status:{user.id}:{15}"
+        cached_data_user_status = cache.get(cache_key_user)
+        cached_data_user_status_load = json.loads(cached_data_user_status)
+        print(cached_data_user_status_load['progress_list'])
+
+        #fetch question in redis with question id for get question score
+        cashe_key_question = f"question:{id_q}"
+        cached_data_question = cache.get(cashe_key_question)
+        cached_data_question_load = json.loads(cached_data_question)
+        print(cached_data_question_load['score'])
+        
+        mistake = cached_data_user_status_load['progress_list'].count("0")
+
+        #update user score in sql
+        user.progress.filter(user=user).update(score=(cached_data_question_load['score'] - mistake))      
+        return cached_data_user_status_load['progress_list']
+        #return Response({"message": "score is updated"}, status=200)
+        
 
 
 

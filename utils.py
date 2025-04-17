@@ -1,6 +1,41 @@
 import requests
 from django.conf import settings
 
+from sms_ir import SmsIr
+
+
+sms_ir = SmsIr(
+'gHx57HHTcBaG9uM94wxcvCvqcsF9Ascqrzg3KbRNoqTb0luT',
+
+30002108000528,
+)
+
+sms_ir.send_sms(
+'09033438205',
+"hi im mamad",
+30002108000528,
+)
+
+
+
+
+def send_message_to_mohammad():
+    api_key = 'gHx57HHTcBaG9uM94wxcvCvqcsF9Ascqrzg3KbRNoqTb0luT'  # کلید API خود را اینجا قرار بده
+    line_number = '30002108000528'  # شماره خط ارسال کننده پیامک
+    recipient_number = '09033438205'
+    message = 'سلام محمد! این یک پیام تستی است.'
+
+    sms_ir = SmsIr(api_key, line_number)
+    response = sms_ir.send_sms(recipient_number, message, line_number)
+    return response
+
+
+
+
+
+
+
+######################################################################3
 class KavenegarSMS:
     API_URL = "https://api.kavenegar.com/v1/{api_key}/sms/send.json"
 

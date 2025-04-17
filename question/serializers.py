@@ -10,7 +10,7 @@ class StageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stage
         fields = [
-             'stage_number', 
+            'stage_number', 
             'option1_title', 'option1_latex', 'option1_descrption',
             'option2_title', 'option2_latex', 'option2_descrption',
             'option3_title', 'option3_latex', 'option3_descrption',
@@ -20,7 +20,6 @@ class StageSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     stages = StageSerializer(many=True)
-
     class Meta:
         model = Question
         fields = [
@@ -38,7 +37,7 @@ class CorectOptionSerializer(serializers.ModelSerializer):
             'correct_option'
         ]
     def to_representation(self, instance):
-        # تبدیل خروجی به یک لیست از مقادیر صحیح
+        #make a list from corecr option
         return int(instance.correct_option) 
     
 
