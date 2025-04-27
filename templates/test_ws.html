@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket تست</title>
+</head>
+<body>
+    <h1>تست WebSocket</h1>
+    <input type="text" id="messageInput" placeholder="پیام بنویسید...">
+    <button onclick="sendMessage()">ارسال پیام</button>
+
+    <ul id="messages"></ul>
+
+    <script>
+        const socket = new WebSocket('ws://localhost:8000/ws/score/');
+
+        socket.onopen = function(e) {
+            console.log("✅ WebSocket اتصال برقرار شد");
+        };
+
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const messages = document.getElementById('messages');
+            const li = document.createElement('li');
+            li.textContent = data.message;
+            messages.appendChild(li);
+        };
+
+        socket.onclose = function(e) {
+            console.log("❌ اتصال قطع شد");
+        };
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value;
+            socket.send(JSON.stringify({
+                'message': message
+            }));
+            input.value = '';
+        }
+    </script>
+</body>
+</html>

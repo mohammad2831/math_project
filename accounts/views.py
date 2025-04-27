@@ -138,6 +138,7 @@ class Test(APIView):
 
 
 #reset and change the password
+
 class ResetPasswordView(APIView):
     authentication_classes = [TokenAuthentication] 
 

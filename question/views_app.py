@@ -11,10 +11,14 @@ from rest_framework.authentication import TokenAuthentication
 from django.core.cache import cache
 import json
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
-
-
 from django.shortcuts import render, get_object_or_404, redirect
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+
+
+def test_ws(request):
+    return render(request, 'test_ws.html')
 
 
 class test(APIView):
@@ -119,13 +123,17 @@ class QuestionView(APIView):
     authentication_classes = [JWTAuthentication] 
     permission_classes = [IsAuthenticated]
 
-
+    #show queston
     def get(self, request, id_q, id_s):
+        #check cashe key from redis
         question_cache_key = f"question_{id_q}" 
         cached_question_data = cache.get(question_cache_key)
         
         if cached_question_data:
             ser_data = cached_question_data
+
+        #if cache is not exist then fetch from sql
+        #and set it in redis
         else:
             question = get_object_or_404(Question, id=id_q)
             ser_data = QuestionFormSerializer(question).data
@@ -152,17 +160,14 @@ class QuestionView(APIView):
         return Response({'stage': stage_data, 'form': ser_data})
 
 
+
     #check if answer is correct or not
     #and add it in user status table
     #key in redis is :1:user_status:user-id:question-is
     #and add it in progress list
     def post(self, request, id_q, id_s):
-
-
-        self.calcute_score(request, id_q)
-
-
-
+        print("post")
+        #self.calcute_score(request, id_q)
         user = request.user
         
         # answer user send it    
@@ -174,7 +179,7 @@ class QuestionView(APIView):
             cached_data_correct_option = cache.get(cache_key_correct_option)
 
             #fetch user status list in redis with question id
-            cache_key_user = f"user_status:{user.id}:{15}"
+            cache_key_user = f"user_status:{user.id}:{id_q}"
             cached_data_user_status = cache.get(cache_key_user)
             
             if cached_data_user_status:
@@ -188,7 +193,13 @@ class QuestionView(APIView):
 
                             #check if all question is solved and add score
                             if id_s == len(cached_data_correct_option_load):
-                                self.calcute_score(request, id_q) 
+                                result =self.calculate_score(request, id_q) 
+                                print("test calculate")
+                                
+                                return Response({"score": result["score"],"mistake":result["mistake"],"message":result["message"]}, status=200)
+
+                            if id_s >= len(cached_data_correct_option_load):
+                                return Response({"message": "the stage is finished"}, status=405)
 
                             #add correct answer in user status table , progress list with 1
                             cached_data_user_status_load['progress_list'].append("1")
@@ -215,9 +226,7 @@ class QuestionView(APIView):
                             
                             return Response({"message": "incorrect"}, status=200)
                         
-
-
-                        
+      
 
                     except json.JSONDecodeError:
                         return Response({"error": "Unable to decode cached data"}, status=400)
@@ -227,12 +236,18 @@ class QuestionView(APIView):
                 return Response({"error": "problem in user status table"}, status=408)
             
 
-    #claculte score for user whe all question is solved
-    def calcute_score(self, request, id_q):
-        user=request.user
+    #claculte score for user when all question is solved
+    
 
+
+
+
+    def calculate_score(self, request, id_q):
+        user=request.user
+        print("hi")
+        print(f"user_{user.id}")
         #fetch user status list in redis with user id
-        cache_key_user = f"user_status:{user.id}:{15}"
+        cache_key_user = f"user_status:{user.id}:{id_q}"
         cached_data_user_status = cache.get(cache_key_user)
         cached_data_user_status_load = json.loads(cached_data_user_status)
         print(cached_data_user_status_load['progress_list'])
@@ -241,13 +256,32 @@ class QuestionView(APIView):
         cashe_key_question = f"question:{id_q}"
         cached_data_question = cache.get(cashe_key_question)
         cached_data_question_load = json.loads(cached_data_question)
-        print(cached_data_question_load['score'])
+        print("total-score",cached_data_question_load['score'])
         
         mistake = cached_data_user_status_load['progress_list'].count("0")
-
+        print("mistake:",mistake)
+        total_score = cached_data_question_load['score'] - mistake
         #update user score in sql
         user.progress.filter(user=user).update(score=(cached_data_question_load['score'] - mistake))      
-        return cached_data_user_status_load['progress_list']
+
+
+        channel_layer = get_channel_layer()
+        print("hi")
+        print(f"user_{user.id}")
+        async_to_sync(channel_layer.group_send)(
+            f"user_{user.id}",
+            {
+                "type": "send_score",
+                "score": total_score,
+                "mistake": mistake
+            }
+        )
+
+        return {
+            'score':total_score,
+            'mistake':mistake,
+            'message':"score is updated"
+        }
         #return Response({"message": "score is updated"}, status=200)
         
 

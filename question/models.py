@@ -31,6 +31,12 @@ class Question(models.Model):
     ]
 
     difficulty = models.CharField(max_length=6, choices=DIFFICULTY_CHOICES, null=True)
+
+    CATEGOYY_CHOICES = [
+        ('integral', 'integral'),
+        ('derivative','derivative'),
+    ]
+    category = models.CharField(max_length=10, choices=CATEGOYY_CHOICES, null=True)
     
     def save(self, *args, **kwargs):
    
@@ -96,19 +102,19 @@ class Roadmap(models.Model):
 
 class UserProgress(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='progress')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)  # ذخیره پیشرفت در هر دسته‌بندی
-    last_question = models.PositiveIntegerField(null=True, blank=True)  # شماره آخرین سوال حل شده
-    completed_question_orders = models.JSONField(default=list)  # لیستی از شماره سؤالات حل‌شده
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)  
+    last_question = models.PositiveIntegerField(null=True, blank=True)  
+    completed_question_orders = models.JSONField(default=list)  
     score = models.PositiveIntegerField(default=0)
 
     def add_completed_question(self, question):
-        """افزودن شماره‌ی سوال حل‌شده به لیست"""
+    
         roadmap_entry = Roadmap.objects.filter(question=question, category=self.category).first()
         if roadmap_entry:
-            # به‌روزرسانی مقدار `last_question_order`
+           
             self.last_question_order = roadmap_entry.order
             
-            # اضافه کردن شماره سوال به لیست اگر از قبل وجود نداشته باشد
+           
             if roadmap_entry.order not in self.completed_question_orders:
                 self.completed_question_orders.append(roadmap_entry.order)
 
