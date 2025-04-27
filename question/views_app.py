@@ -1,5 +1,5 @@
 from django.views import View
-from .models import Question,Stage, UserProgress
+from .models import QuestionIntegral,QuestionDerivative,StageIntegral,StageDerivative, UserProgress
 from accounts.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -87,6 +87,8 @@ class test(APIView):
            # "jwt_payload": token_payload  # اینجا محتوای کامل توکن را داری
         })
 
+
+'''
 class AllQuestionView(APIView):
 
     def get(self, request):
@@ -95,6 +97,7 @@ class AllQuestionView(APIView):
         serializer = AllQuestionSerializer(questions, many=True, context={'request': request})
         return Response(serializer.data)
 
+'''
 
 
 
@@ -118,8 +121,7 @@ class AllQuestionView(APIView):
 
 
 
-
-class QuestionView(APIView):
+class QuestionIntegralView(APIView):
     authentication_classes = [JWTAuthentication] 
     permission_classes = [IsAuthenticated]
 
@@ -135,13 +137,13 @@ class QuestionView(APIView):
         #if cache is not exist then fetch from sql
         #and set it in redis
         else:
-            question = get_object_or_404(Question, id=id_q)
+            question = get_object_or_404(QuestionIntegral, id=id_q)
             ser_data = QuestionFormSerializer(question).data
             ser_data_json = json.dumps(ser_data)
             cache.set(question_cache_key, ser_data_json, timeout=1200) 
 
            
-            stages = Stage.objects.filter(question_id=id_q).order_by('stage_number')
+            stages = StageIntegral.objects.filter(question_id=id_q).order_by('stage_number')
             stages_data = StageSerializer(stages, many=True).data
             stages_cache_key = f"stages_{id_q}"
             cache.set(stages_cache_key, stages_data, timeout=1200)  
@@ -153,7 +155,7 @@ class QuestionView(APIView):
         if cached_stage_data:
             stage_data = cached_stage_data
         else:
-            stage = Stage.objects.get(question_id=id_q, stage_number=id_s)
+            stage = StageIntegral.objects.get(question_id=id_q, stage_number=id_s)
             stage_data = StageSerializer(stage).data
             cache.set(stage_cache_key, stage_data, timeout=1200) 
         
@@ -195,7 +197,7 @@ class QuestionView(APIView):
                             if id_s == len(cached_data_correct_option_load):
                                 result =self.calculate_score(request, id_q) 
                                 print("test calculate")
-                                
+
                                 return Response({"score": result["score"],"mistake":result["mistake"],"message":result["message"]}, status=200)
 
                             if id_s >= len(cached_data_correct_option_load):

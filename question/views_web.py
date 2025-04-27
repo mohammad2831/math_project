@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views import View
-from .models import Question,Stage
+from .models import QuestionIntegral,QuestionDerivative,StageIntegral,StageDerivative
 from accounts.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -13,9 +13,11 @@ from rest_framework.authentication import TokenAuthentication
 from django.shortcuts import render, get_object_or_404, redirect
 
 
+
+''''''
 class AllQuestionView(APIView):
     def get(self, request):
-        questions = Question.objects.all()
+        questions = QuestionIntegral.objects.all()
 
         serializer = AllQuestionSerializer(questions, many=True, context={'request': request})
         return Response(serializer.data)
@@ -24,7 +26,7 @@ class QuestionView(APIView):
     #authentication_classes = [TokenAuthentication] 
     #permission_classes = [IsAuthenticated]
     def get(self, request, id_q, id_s):
-        question = get_object_or_404(Question, id=id_q)
+        question = get_object_or_404(QuestionIntegral, id=id_q)
         ser_data = QuestionFormSerializer(question)
         stage = Stage.objects.get(question=question, stage_number=1)
         start_stage=StageSerializer(stage)
@@ -35,10 +37,10 @@ class QuestionView(APIView):
 
     def post(self, request, id_q, id_s):
        # user = User.objects.get(user=request.user)
-        question = get_object_or_404(Question, id=id_q)
+        question = get_object_or_404(QuestionIntegral, id=id_q)
         ser_data = QuestionFormSerializer(question)
 
-        stage = Stage.objects.filter(question=question, stage_number=id_s).first()
+        stage = StageIntegral.objects.filter(question=question, stage_number=id_s).first()
 
         if not stage:
             return Response({'error': 'Stage not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -48,7 +50,7 @@ class QuestionView(APIView):
 
         if selected_option == correct_option:
             message = "Correct option"
-            next_stage = Stage.objects.filter(question=question, stage_number=id_s + 1).first()
+            next_stage = StageIntegral.objects.filter(question=question, stage_number=id_s + 1).first()
 
 
             if next_stage:
@@ -74,7 +76,7 @@ class QuestionView(APIView):
 
 class SelectQuestionView(APIView):
     def get(self,request, id_q):
-        question = get_object_or_404(Question, id=id_q)
+        question = get_object_or_404(QuestionIntegral, id=id_q)
 
 
         ser_data = SelectQuestionSerializer(question)

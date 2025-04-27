@@ -1,14 +1,14 @@
 from rest_framework import serializers
-from .models import Question, Stage
+from .models import QuestionIntegral, StageIntegral, QuestionDerivative,StageDerivative
 
 class QuestionFormSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Question
+        model = QuestionIntegral
         fields = ['question_latex']
 
 class StageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Stage
+        model = StageIntegral
         fields = [
             'stage_number', 
             'option1_title', 'option1_latex', 'option1_descrption',
@@ -21,7 +21,7 @@ class StageSerializer(serializers.ModelSerializer):
 class QuestionSerializer(serializers.ModelSerializer):
     stages = StageSerializer(many=True)
     class Meta:
-        model = Question
+        model = QuestionIntegral
         fields = [
             'id', 'title', 'question_latex', 'description', 
             'stage', 'score', 'difficulty', 'stages'
@@ -32,7 +32,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 class CorectOptionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Stage
+        model = StageIntegral
         fields = [
             'correct_option'
         ]
@@ -47,7 +47,7 @@ class CorectOptionSerializer(serializers.ModelSerializer):
 
 class SelectQuestionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Question
+        model = QuestionIntegral
         fields = ['title', 'difficulty', 'score', 'question_latex', 'description']
 
 
@@ -57,7 +57,7 @@ class AllQuestionSerializer(serializers.ModelSerializer):
     is_solved = serializers.SerializerMethodField()
 
     class Meta:
-        model = Question
+        model = QuestionIntegral
         fields = ['id', 'title', 'difficulty', 'question_latex']
 
 

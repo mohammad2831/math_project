@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib import admin
-from .models import Question, Stage, Roadmap, UserProgress,Category
+from .models import QuestionIntegral, StageIntegral, UserProgress,Category, QuestionDerivative,StageDerivative
 from .forms import StageAdminForms
 
 
@@ -58,12 +58,12 @@ class QuestionAdmin(admin.ModelAdmin):
 '''
 
 class StageInline(admin.StackedInline):  # یا admin.StackedInline برای نمایش ستونی
-    model = Stage
+    model = StageIntegral
     extra = 1 
 
 
 class QuestionAdmin(admin.ModelAdmin):
-    model= Question
+    model= QuestionIntegral
     fields=[
         'title',
         'question_latex',
@@ -80,7 +80,7 @@ class QuestionAdmin(admin.ModelAdmin):
 
 #form in admin pannel for stage setting
 class StageAdmin(admin.ModelAdmin):
-    model= Stage
+    model= StageIntegral
 
     fields = [
               'stage_number',
@@ -104,8 +104,7 @@ class StageAdmin(admin.ModelAdmin):
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display=('category_name',)
-
-@admin.register(Roadmap)
+#@admin.register(Roadmap)
 class RoadmapAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'question', 'order')  # نمایش فیلدها در لیست
     list_filter = (('category', admin.RelatedOnlyFieldListFilter),) # امکان فیلتر بر اساس دسته‌بندی
@@ -117,5 +116,5 @@ class UserProgressAdmin(admin.ModelAdmin):
     list_filter = ('category', 'user')  # امکان فیلتر بر اساس کاربر و دسته‌بندی
     search_fields = ('user__email', 'category__category_name')  # جستجو بر اساس ایمیل کاربر و نام دسته‌بندی
    
-admin.site.register(Question,QuestionAdmin)
-admin.site.register(Stage,StageAdmin)
+#admin.site.register(Question,QuestionAdmin)
+#admin.site.register(Stage,StageAdmin)

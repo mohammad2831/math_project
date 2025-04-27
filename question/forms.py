@@ -1,9 +1,10 @@
 from django import forms
-from . models import Question, Stage
+from . models import QuestionIntegral, StageIntegral, QuestionDerivative, StageDerivative
+
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
-        model = Question
+        model = QuestionIntegral
         fields = [
             'title',
             'question_latex'
@@ -29,7 +30,7 @@ class UserProfileForm(forms.ModelForm):
 
 
 class StageAdminForms(forms.ModelForm):
-    model = Stage
+    model = StageIntegral
     fields = [
             'option1_title',  
             'option1_latex',
