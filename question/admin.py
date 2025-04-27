@@ -57,12 +57,14 @@ class QuestionAdmin(admin.ModelAdmin):
     form = StageAdminForms
 '''
 
-class StageInline(admin.StackedInline):  # یا admin.StackedInline برای نمایش ستونی
+class StageIntegralInline(admin.StackedInline):  
     model = StageIntegral
     extra = 1 
 
-
-class QuestionAdmin(admin.ModelAdmin):
+class StageDerivativeInline(admin.StackedInline):  
+    model = StageDerivative
+    extra = 1 
+class QuestionIntegralAdmin(admin.ModelAdmin):
     model= QuestionIntegral
     fields=[
         'title',
@@ -73,13 +75,24 @@ class QuestionAdmin(admin.ModelAdmin):
         'difficulty',
                 
     ]
-    inlines = [StageInline]
+    inlines = [StageIntegralInline]
 
-
+class QuestionDeivativeAdmin(admin.ModelAdmin):
+    model= QuestionDerivative
+    fields=[
+        'title',
+        'question_latex',
+        'description',
+        'stage',
+        'score',
+        'difficulty',
+                
+    ]
+    inlines = [StageDerivativeInline]
 
 
 #form in admin pannel for stage setting
-class StageAdmin(admin.ModelAdmin):
+class StageIntegralAdmin(admin.ModelAdmin):
     model= StageIntegral
 
     fields = [
@@ -99,16 +112,26 @@ class StageAdmin(admin.ModelAdmin):
 
               'correct_option'] 
 
+class StageDerivativeAdmin(admin.ModelAdmin):
+    model= StageDerivative
 
+    fields = [
+              'stage_number',
 
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display=('category_name',)
-#@admin.register(Roadmap)
-class RoadmapAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'question', 'order')  # نمایش فیلدها در لیست
-    list_filter = (('category', admin.RelatedOnlyFieldListFilter),) # امکان فیلتر بر اساس دسته‌بندی
-    search_fields = ('name', 'question__title')  # امکان جستجو در نام و سوال
+              'option1_latex',
+              'option1_descrption',
+
+              'option2_latex',
+              'option2_descrption',
+
+              'option3_latex',
+              'option3_descrption',
+
+              'option4_latex',
+              'option4_descrption',
+
+              'correct_option'] 
+
 
 @admin.register(UserProgress)
 class UserProgressAdmin(admin.ModelAdmin):
@@ -116,5 +139,10 @@ class UserProgressAdmin(admin.ModelAdmin):
     list_filter = ('category', 'user')  # امکان فیلتر بر اساس کاربر و دسته‌بندی
     search_fields = ('user__email', 'category__category_name')  # جستجو بر اساس ایمیل کاربر و نام دسته‌بندی
    
-#admin.site.register(Question,QuestionAdmin)
-#admin.site.register(Stage,StageAdmin)
+admin.site.register(QuestionIntegral,QuestionIntegralAdmin)
+admin.site.register(QuestionDerivative,QuestionDeivativeAdmin)
+
+
+admin.site.register(StageIntegral,StageIntegralAdmin)
+admin.site.register(StageDerivative,StageDerivativeAdmin)
+

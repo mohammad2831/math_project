@@ -5,7 +5,7 @@ from accounts.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import QuestionSerializer , StageSerializer,AllQuestionSerializer, SelectQuestionSerializer,QuestionFormSerializer
+from .serializers import QuestionIntegralSerializer , StageIntegralSerializer,AllQuestionSerializer, SelectQuestionSerializer,QuestionIntegralFormSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication

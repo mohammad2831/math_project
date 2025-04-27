@@ -21,7 +21,7 @@ class QuestionIntegral(models.Model):
     title = models.CharField(max_length=255)  
     question_latex = models.TextField(null = True, blank=True) 
     description = models.TextField(null=True)
-    stage = models.SmallIntegerField(null=True)
+    stage = models.SmallIntegerField(null=True, blank=True)
     score = models.SmallIntegerField(null=True, blank=True)
 
     DIFFICULTY_CHOICES = [
@@ -33,22 +33,26 @@ class QuestionIntegral(models.Model):
     difficulty = models.CharField(max_length=6, choices=DIFFICULTY_CHOICES, null=True)
     
     def save(self, *args, **kwargs):
-   
         is_new = self.pk is None
-    
-        super().save(*args, **kwargs) 
-    
-        if is_new:
-            num_stages = self.stages.count()
         
-            if self.difficulty == 'easy':
-                self.score = num_stages + 3
-            elif self.difficulty == 'medium':
-                self.score = num_stages + 6
-            elif self.difficulty == 'hard':
-                self.score = num_stages + 9
+       
+        super().save(*args, **kwargs)
 
-            super().save(update_fields=['score'])  
+        
+        num_stages = self.stages.count()  
+
+        self.stage = num_stages
+
+        # مقدار score را هم بر اساس سختی و تعداد مراحل مقداردهی می‌کنیم
+        if self.difficulty == 'easy':
+            self.score = num_stages + 3
+        elif self.difficulty == 'medium':
+            self.score = num_stages + 6
+        elif self.difficulty == 'hard':
+            self.score = num_stages + 9
+
+        # مجدداً ذخیره می‌کنیم ولی فقط فیلدهای stage و score
+        super().save(update_fields=['stage', 'score'])  
 
 
     def __str__(self):
@@ -59,7 +63,7 @@ class QuestionDerivative(models.Model):
     title = models.CharField(max_length=255)  
     question_latex = models.TextField(null = True, blank=True) 
     description = models.TextField(null=True)
-    stage = models.SmallIntegerField(null=True)
+    stage = models.SmallIntegerField(null=True,blank=True)
     score = models.SmallIntegerField(null=True, blank=True)
 
     DIFFICULTY_CHOICES = [
@@ -71,22 +75,27 @@ class QuestionDerivative(models.Model):
     difficulty = models.CharField(max_length=6, choices=DIFFICULTY_CHOICES, null=True)
     
     def save(self, *args, **kwargs):
-   
         is_new = self.pk is None
-    
-        super().save(*args, **kwargs) 
-    
-        if is_new:
-            num_stages = self.stages.count()
         
-            if self.difficulty == 'easy':
-                self.score = num_stages + 3
-            elif self.difficulty == 'medium':
-                self.score = num_stages + 6
-            elif self.difficulty == 'hard':
-                self.score = num_stages + 9
+        # اول خود سوال را ذخیره می‌کنیم
+        super().save(*args, **kwargs)
 
-            super().save(update_fields=['score'])  
+        # حالا تعداد stage های مربوط به این سوال را می‌شماریم
+        num_stages = self.stages.count()  # فرض: رابطه‌ای داری به اسم stages
+
+        # مقدار stage را مقداردهی می‌کنیم
+        self.stage = num_stages
+
+        # مقدار score را هم بر اساس سختی و تعداد مراحل مقداردهی می‌کنیم
+        if self.difficulty == 'easy':
+            self.score = num_stages + 3
+        elif self.difficulty == 'medium':
+            self.score = num_stages + 6
+        elif self.difficulty == 'hard':
+            self.score = num_stages + 9
+
+        # مجدداً ذخیره می‌کنیم ولی فقط فیلدهای stage و score
+        super().save(update_fields=['stage', 'score'])
 
 
     def __str__(self):
