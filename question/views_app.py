@@ -197,7 +197,8 @@ class QuestionIntegralView(APIView):
                             if id_s == len(cached_data_correct_option_load):
                                 result =self.calculate_score(request, id_q) 
                                 print("test calculate")
-
+                                cache.delete(cache_key_user)
+                                UserProgress.objects.filter(user=user).update(score=result["score"])
                                 return Response({"score": result["score"],"mistake":result["mistake"],"message":result["message"]}, status=200)
 
                             if id_s >= len(cached_data_correct_option_load):
@@ -366,6 +367,11 @@ class QuestionDerivativeView(APIView):
                             if id_s == len(cached_data_correct_option_load):
                                 result =self.calculate_score(request, id_q) 
                                 print("test calculate")
+                                
+                                cache.delete(cache_key_user)
+                                UserProgress.objects.filter(user=user).update(score=result["score"])
+
+
 
                                 return Response({"score": result["score"],"mistake":result["mistake"],"message":result["message"]}, status=200)
 
