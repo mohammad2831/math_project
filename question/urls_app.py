@@ -15,7 +15,7 @@ urlpatterns =[
 
 
    #path('test/', views_app.test.as_view(), name="test")
-   path('test/', views_app.test_ws, name='test-ws'),
+   path('testacount/', views_app.testacount.as_view()),
 
 ]
 

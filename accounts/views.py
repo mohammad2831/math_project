@@ -29,6 +29,14 @@ from utils import KavenegarSMS
 
 
 class testOtp(APIView):
+    authentication_classes = [JWTAuthentication]  # احراز هویت با توکن JWT
+    permission_classes = [IsAuthenticated]
+    def get(self, requsest):
+        user= requsest.user
+        id = user.id
+        if id is None:
+            print("noneeeeeeeeeee")
+        return Response(user.id)
     def post(self, request):
         phone_number = request.data.get("phone_number")
         if not phone_number:
@@ -106,7 +114,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         
         token = super().get_token(user)
-        
+        token['id'] = user.id
         token['phone_number'] = user.phone_number
         token['full_name'] = user.full_name
         token['email'] = user.email

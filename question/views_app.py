@@ -20,74 +20,18 @@ from asgiref.sync import async_to_sync
 def test_ws(request):
     return render(request, 'test_ws.html')
 
-'''
-class test(APIView):
+
+class testacount(APIView):
     authentication_classes = [JWTAuthentication]  # احراز هویت با توکن JWT
     permission_classes = [IsAuthenticated]
     def get (self, request):
         print("test is okkkk")
         #return Response({"message":"ok"})
         user = request.user  # اطلاعات کاربر
-        
+        print()
+        return Response(user.user_id)
+    
 
-        cache_key_user = f"user_status:{user.id}:{15}"
-
-
-        cached_data = cache.get(cache_key_user)
-        if cached_data:
-            print("User status found in cache!")
-            # تبدیل داده سریالایز شده به دیکشنری
-            user_status = json.loads(cached_data)
-
-            # افزودن مقدار جدید به لیست
-            for i in range(1, 5):
-                user_status['progress_list'].append(f"{i}")
-
-
-            if 0 <= 2 < len(user_status['progress_list']):
-            # برگرداندن مقدار موجود در ایندکس خاص
-                value_at_index = user_status['progress_list'][2]
-            print(f"Value at index {2}: {value_at_index}")
-            # ذخیره داده جدید در کش
-            cache.set(
-                cache_key_user,
-                json.dumps(user_status),  # تبدیل داده به JSON
-                timeout=400
-            )
-            print("Value added to progress list and saved in Redis.")
-            #return user_status
-        else:
-            print("User status not found in cache.")
-            #return None
-        return Response({"message":"ok"})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        return Response({
-            "user_id": user.id,
-            "email": user.email,
-            
-           # "jwt_payload": token_payload  # اینجا محتوای کامل توکن را داری
-        })
-
-'''
 '''
 class AllQuestionView(APIView):
 

@@ -3,9 +3,9 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "7@example.com",
-  "phone_number": "70000000000",
-  "full_name": "7",
+  "email": "12@example.com",
+  "phone_number": "12100000000",
+  "full_name": "12",
   "password": "6541"
 }
 
@@ -57,7 +57,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 GET  http://127.0.0.1:8000/accounts/test/
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0OTA2Mzc3LCJpYXQiOjE3NDQ5MDAzNzcsImp0aSI6IjRiNTc3N2NhNDg0NTQyM2U4YmI3MjFhNmY0YmY0ZjhmIiwidXNlcl9pZCI6IjYwMDAwMDAwMDAwIiwicGhvbmVfbnVtYmVyIjoiNjAwMDAwMDAwMDAiLCJmdWxsX25hbWUiOiI2IiwiZW1haWwiOiI2QGV4YW1wbGUuY29tIiwic2NvcmUiOjIsImxhc3QtcXVlc3Rpb24taW50ZWdyYWwiOjEsImxhc3QtcXVlc3Rpb24tZGVyaXZhdGl2ZSI6MH0.ml9mjJHTuWNTCQ720kVDKB7EzJtWGuK-G-jo5-j01G4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2MzA2NjIxLCJpYXQiOjE3NDYzMDA2MjEsImp0aSI6IjA5OWM4OWE3YzI1NTRlYTFhZTFiZmMxMGJmYjAyMDBjIiwidXNlcl9pZCI6IjYwMDAwMDAwMDAwIiwicGhvbmVfbnVtYmVyIjoiNjAwMDAwMDAwMDAiLCJmdWxsX25hbWUiOiI2IiwiZW1haWwiOiI2QGV4YW1wbGUuY29tIiwic2NvcmUiOjQsImxhc3QtcXVlc3Rpb24taW50ZWdyYWwiOjEsImxhc3QtcXVlc3Rpb24tZGVyaXZhdGl2ZSI6MH0.iCpHVuRm4EevCE2hSkGKsObOSDKQofa4EVggd_SQrzc
 ####################################
 POST http://127.0.0.1:8000/question-app/13/ 
 Content-Type: application/json
@@ -93,3 +93,10 @@ Accept: application/json
 }
 
 
+
+#########################################
+GET http://127.0.0.1:8000/accounts/test/
+
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2MzA3MDUyLCJpYXQiOjE3NDYzMDEwNTIsImp0aSI6ImUzYWY1ZmIwNjFmZDQ0NGQ5NDM1MzU0MWJhN2Q0YzNmIiwidXNlcl9pZCI6IjYwMDAwMDAwMDAwIiwicGhvbmVfbnVtYmVyIjoiNjAwMDAwMDAwMDAiLCJmdWxsX25hbWUiOiI2IiwiZW1haWwiOiI2QGV4YW1wbGUuY29tIiwic2NvcmUiOjQsImxhc3QtcXVlc3Rpb24taW50ZWdyYWwiOjEsImxhc3QtcXVlc3Rpb24tZGVyaXZhdGl2ZSI6MH0.zgwHcmLpaHqOxBdA5smcTcS_tMbXLzosZLx3MXY4mzs
