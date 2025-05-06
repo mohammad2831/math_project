@@ -28,5 +28,5 @@ urlpatterns =[
    path('test/', views.Test.as_view(), name='test_jwt'),
 
    path('testotp/', views.testOtp.as_view(), name='testotp'),
-    
+   path('thruthling/', views.testthritling.as_view(), name='throthling')
 ]

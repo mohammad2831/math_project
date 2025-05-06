@@ -26,8 +26,15 @@ import requests
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from utils import KavenegarSMS
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
 
+
+class testthritling(APIView):
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+
+    def get(self, request):
+        return Response({"this test throthling"})
 class testOtp(APIView):
     authentication_classes = [JWTAuthentication]  # احراز هویت با توکن JWT
     permission_classes = [IsAuthenticated]
@@ -59,6 +66,8 @@ class testOtp(APIView):
 
 
 class UserRegisterVerifyCodeView(APIView):
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+    
     def post(self, request):
         ser_data = VerifyCodeSerializer(data=request.data)
         if ser_data.is_valid():
@@ -149,6 +158,7 @@ class Test(APIView):
 
 class ResetPasswordView(APIView):
     authentication_classes = [TokenAuthentication] 
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def put(self, request):
         user_session = request.session.get('forgot_password_info')
@@ -174,7 +184,9 @@ class ResetPasswordView(APIView):
 
 #verify otp code for forgot password function
 class OtpResetPasswordView(APIView):
-     def post(self, request):
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+
+    def post(self, request):
         user_session=request.session['forgot_password_info']
         code_instance = OtpCode.objects.get(phone_number=user_session['phone_number'])
         user = User.objects.get(phone_number=user_session['phone_number'] )
@@ -198,6 +210,8 @@ class OtpResetPasswordView(APIView):
 
 # send otp code for forgot password function
 class UserForgotpasswordView(APIView):
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+
     def post(self, request):
         ser_data = UserForgotpasswordSerializer(data = request.data)
         if ser_data.is_valid():          
@@ -225,6 +239,8 @@ class UserForgotpasswordView(APIView):
 
    
 class UserProfileView(APIView):
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+
     authentication_classes = [JWTAuthentication]  
     permission_classes = [IsAuthenticated]  
 
@@ -250,6 +266,8 @@ class UserProfileView(APIView):
 
 
 class UserLoginView(APIView):
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+
     def post(self, request):
         ser_data = UserLoginSerializer(data=request.data)
         print("heloo")
@@ -298,6 +316,8 @@ class UserLoginView(APIView):
         
 
 class UserRegisterView(APIView):
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+
     def post(self, request):
         ser_data = UserRegisterSerializer(data=request.data)
         if ser_data.is_valid():
@@ -320,6 +340,8 @@ class UserRegisterView(APIView):
 
 
 class UserLogoutView(APIView):
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+
     authentication_classes = [JWTAuthentication]  
     permission_classes = [IsAuthenticated]
 

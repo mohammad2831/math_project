@@ -174,7 +174,12 @@ REST_FRAMEWORK = {
         
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'DEFAULT_CONTENT_ENCODING':'gzip'
+    'DEFAULT_CONTENT_ENCODING':'gzip',
+
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '10/minute',  # for unauthenticated users
+        'user': '100/minute',   # for authenticated users
+    }
     
 
 }
