@@ -332,7 +332,7 @@ class UserRegisterView(APIView):
                 'otp': random_code
             }
 
-            cache.set(f'user_registration:{random_code}', user_data, timeout=920)
+            cache.set(f'user_registration:{random_code}', user_data, timeout=180)
             return Response({"code":random_code,}, status=200)
         return Response({"error": "Invalid data."}, status=400)
 
@@ -362,7 +362,7 @@ class UserLogoutView(APIView):
             return Response({"detail": f"Invalid token: {str(e)}"}, status=400)
 
         redis = get_redis_connection('default')
-        redis.setex(f"blacklisted_{access_token}", 3600, access_token)  # ذخیره توکن به مدت 1 ساعت
+        redis.setex(f"blacklisted_{access_token}", 3600, access_token)  
 
         return Response({"detail": "Successfully logged out."}, status=200)
     

@@ -1,11 +1,11 @@
-POST http://127.0.0.1:8000/accounts/register/
+POST http://77.237.82.221:8000/accounts/register/
 Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "12@example.com",
-  "phone_number": "12100000000",
-  "full_name": "12",
+  "email": "111@example.com",
+  "phone_number": "11100000000",
+  "full_name": "121",
   "password": "6541"
 }
 
@@ -40,7 +40,7 @@ Accept: application/json
 }
 
 ###################################
-GET  http://77.237.82.221:8000/question-app/15/
+GET  http://77.237.82.221:8000/question-app/integral/15/
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1MzIyNTM4LCJpYXQiOjE3NDUzMTY1MzgsImp0aSI6IjZiMzU4ZTY2ZTdkMDQ3NGVhZmI0ZmVlNjIyNjk1Y2MwIiwidXNlcl9pZCI6IjYwMDAwMDAwMDAwIiwicGhvbmVfbnVtYmVyIjoiNjAwMDAwMDAwMDAiLCJmdWxsX25hbWUiOiI2IiwiZW1haWwiOiI2QGV4YW1wbGUuY29tIiwic2NvcmUiOjIsImxhc3QtcXVlc3Rpb24taW50ZWdyYWwiOjEsImxhc3QtcXVlc3Rpb24tZGVyaXZhdGl2ZSI6MH0.D_7V3--Z496iUaL2Hh1qjlZ29YsnZu0Dh0C7WMSDlPo
@@ -102,3 +102,18 @@ GET http://127.0.0.1:8000/accounts/test/
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2MzA3MDUyLCJpYXQiOjE3NDYzMDEwNTIsImp0aSI6ImUzYWY1ZmIwNjFmZDQ0NGQ5NDM1MzU0MWJhN2Q0YzNmIiwidXNlcl9pZCI6IjYwMDAwMDAwMDAwIiwicGhvbmVfbnVtYmVyIjoiNjAwMDAwMDAwMDAiLCJmdWxsX25hbWUiOiI2IiwiZW1haWwiOiI2QGV4YW1wbGUuY29tIiwic2NvcmUiOjQsImxhc3QtcXVlc3Rpb24taW50ZWdyYWwiOjEsImxhc3QtcXVlc3Rpb24tZGVyaXZhdGl2ZSI6MH0.zgwHcmLpaHqOxBdA5smcTcS_tMbXLzosZLx3MXY4mzs
+###################################################
+
+
+
+POST https://api.kavenegar.com/v1/2F727630526A427263695969303945455A4D515859584730792F715257615454654A2B58656D355A6E71633D/sms/send.json
+Content-Type: application/json
+Accept: application/json
+
+{
+  "message":"TEST",
+  "sender": "2000660110" ,
+  "receptor": "09352501923"
+}
+############################
+https://api.kavenegar.com/v1/2F727630526A427263695969303945455A4D515859584730792F715257615454654A2B58656D355A6E71633D/sms/send.json?receptor=09999367495&sender=2000660110&message=test
