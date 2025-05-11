@@ -1,22 +1,22 @@
-POST http://127.0.0.1:8000/accounts/register/
+POST http://77.237.82.221:8000/accounts/register/
 Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "aliii@gmail.com",
-  "phone_number": "09227004896",
-  "full_name": "aliii",
+  "email": "aliiii@gmail.com",
+  "phone_number": "09227704896",
+  "full_name": "aliiii",
   "password": "6541"
 }
 
 
 ########
-POST http://127.0.0.1:8000/accounts/verify/
+POST http://77.237.82.221:8000/accounts/verify/
 Content-Type: application/json
 Accept: application/json
 
 {
-  "code": 5118
+  "code": 3874
 }
 
 #######
