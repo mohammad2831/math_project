@@ -165,7 +165,6 @@ class UserProgress(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='progress')
     last_question_integral = models.PositiveIntegerField(null=True, blank=True)
     last_question_derivative = models.PositiveIntegerField(null=True, blank=True)  
-  
     score = models.PositiveIntegerField(default=0)
 
    

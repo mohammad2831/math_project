@@ -127,9 +127,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['phone_number'] = user.phone_number
         token['full_name'] = user.full_name
         token['email'] = user.email
-        token['score'] = user.score
-        token['last-question-integral'] = user.last_question_integral
-        token['last-question-derivative'] = user.last_question_derivative
+
+        
         
         return token
 
