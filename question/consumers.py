@@ -1,7 +1,6 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
-
-
+from . models import UserProgress
 
 class ScoreConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -16,10 +15,27 @@ class ScoreConsumer(AsyncWebsocketConsumer):
         )
 
         await self.accept()
-        await self.send(text_data=json.dumps({
-            'message': 'WebSocket connection established',
-            'user_id': self.user_id
-        }))
+
+
+        try:
+            user = await UserProgress.objects.aget(id=self.user_id)
+            lastintegral = user.last_question_integral  # یا هر فیلد دلخواه دیگر
+            lastderivative = user.last_question_derivative
+            score = user.score
+            await self.send(text_data=json.dumps({
+                'message': 'WebSocket connection established',
+                'user_id': self.user_id,
+                'last_integral': lastintegral,
+                'last_derivative':lastderivative,
+                'score':score
+            }))
+        except UserProgress.DoesNotExist:
+            await self.send(text_data=json.dumps({
+                'error': 'User not found'
+            }))
+
+
+        
 
 
 

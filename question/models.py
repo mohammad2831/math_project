@@ -163,9 +163,9 @@ class StageDerivative(models.Model):
 
 class UserProgress(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='progress')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)  
-    last_question = models.PositiveIntegerField(null=True, blank=True)  
-    completed_question_orders = models.JSONField(default=list)  
+    last_question_integral = models.PositiveIntegerField(null=True, blank=True)
+    last_question_derivative = models.PositiveIntegerField(null=True, blank=True)  
+  
     score = models.PositiveIntegerField(default=0)
 
    

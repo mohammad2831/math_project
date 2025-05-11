@@ -135,8 +135,8 @@ class StageDerivativeAdmin(admin.ModelAdmin):
 
 @admin.register(UserProgress)
 class UserProgressAdmin(admin.ModelAdmin):
-    list_display = ('user', 'category', 'last_question', 'score')  # نمایش فیلدهای اصلی
-    list_filter = ('category', 'user')  # امکان فیلتر بر اساس کاربر و دسته‌بندی
+    list_display = ('user', 'last_question_derivative', 'last_question_integral', 'score')  # نمایش فیلدهای اصلی
+    list_filter = ('score', 'user')  # امکان فیلتر بر اساس کاربر و دسته‌بندی
     search_fields = ('user__email', 'category__category_name')  # جستجو بر اساس ایمیل کاربر و نام دسته‌بندی
    
 admin.site.register(QuestionIntegral,QuestionIntegralAdmin)
