@@ -1,13 +1,20 @@
 import os
 from django.core.asgi import get_asgi_application
-from channels.routing import ProtocolTypeRouter, URLRouter
-import question.routing  # درست وارد کردی
+from channels.routing import ProtocolTypeRouter
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'math_project.settings')
 
-application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket": URLRouter(
-        question.routing.websocket_urlpatterns
-    ),
-})
+django_asgi_app = get_asgi_application()
+
+def get_application():
+    from channels.routing import URLRouter
+    import question.routing
+
+    return ProtocolTypeRouter({
+        "http": django_asgi_app,
+        "websocket": URLRouter(
+            question.routing.websocket_urlpatterns
+        ),
+    })
+
+application = get_application()
