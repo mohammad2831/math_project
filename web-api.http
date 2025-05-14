@@ -1,0 +1,26 @@
+POST http://77.237.82.221:8000/accounts/login/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "phone_number": "60000000000",
+  "password":"6541"
+}
+
+###################################
+GET  http://127.0.0.1:8000/question-web/
+Content-Type: application/json
+Accept: application/json
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1MzIyNTM4LCJpYXQiOjE3NDUzMTY1MzgsImp0aSI6IjZiMzU4ZTY2ZTdkMDQ3NGVhZmI0ZmVlNjIyNjk1Y2MwIiwidXNlcl9pZCI6IjYwMDAwMDAwMDAwIiwicGhvbmVfbnVtYmVyIjoiNjAwMDAwMDAwMDAiLCJmdWxsX25hbWUiOiI2IiwiZW1haWwiOiI2QGV4YW1wbGUuY29tIiwic2NvcmUiOjIsImxhc3QtcXVlc3Rpb24taW50ZWdyYWwiOjEsImxhc3QtcXVlc3Rpb24tZGVyaXZhdGl2ZSI6MH0.D_7V3--Z496iUaL2Hh1qjlZ29YsnZu0Dh0C7WMSDlPo
+####################################################################
+GET  http://127.0.0.1:8000/question-web/1/
+Content-Type: application/json
+Accept: application/json
+#########
+POST http://127.0.0.1:8000/question-web/1/2/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "answer": "4"
+}

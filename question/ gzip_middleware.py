@@ -9,9 +9,8 @@ class GZipAPIResponseMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
     
 
-        if re.match(r'^/question-app/\d+/$', request.path):
+        if re.match(r'^/question-app/\d+/$', request.path) or re.match(r'^/question-web/\d+/$', request.path):
             
-            print("middlewarerrrrrrrrrr")
             
                
             gzipped_buffer = BytesIO()

@@ -102,7 +102,7 @@ class SelectQDerivativeSerializer(serializers.ModelSerializer):
 ######################################################################################
 
 class AllQuestionSerializer(serializers.ModelSerializer):
-    is_solved = serializers.SerializerMethodField()
+    
 
     class Meta:
         model = QuestionIntegral

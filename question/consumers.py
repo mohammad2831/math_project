@@ -35,17 +35,6 @@ class ScoreConsumer(AsyncWebsocketConsumer):
             }))
 
 
-        
-
-
-
-
-
-
-
-
-
-
 
     async def receive(self, text_data):
         if not text_data:

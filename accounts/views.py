@@ -269,13 +269,16 @@ class UserLoginView(APIView):
 
     def post(self, request):
         ser_data = UserLoginSerializer(data=request.data)
-        print("heloo")
 
         if ser_data.is_valid():
             phone_number = ser_data.validated_data['phone_number']
             password = ser_data.validated_data['password']
 
-            user = get_object_or_404(User,phone_number=phone_number)
+            try:
+                user = User.objects.get(phone_number=phone_number)
+            except User.DoesNotExist:
+                return Response({"error": "No User matches the input"}, status=406)
+
             if user.check_password(password):
 
                 server_host = request.get_host()  
@@ -308,8 +311,8 @@ class UserLoginView(APIView):
 
 
             else:
-                return Response({"error": "Invalid phone number or password"}, status=400)
-        return Response({"error": "Invalid input data "}, status=400)
+                return Response({"error": "Invalid phone number or password"}, status=407)
+        return Response({"error": "Invalid input data "}, status=405)
 
 
         
@@ -321,7 +324,7 @@ class UserRegisterView(APIView):
         ser_data = UserRegisterSerializer(data=request.data)
         if ser_data.is_valid():
             random_code = random.randint(1000, 9999)
-       #     send_otp_code(ser_data.validated_data['phone_number'], random_code)
+            #send_otp_code(ser_data.validated_data['phone_number'], random_code)
             OtpCode.objects.create(phone_number = ser_data.validated_data['phone_number'], code=random_code)
             user_data = {
                 'email' : ser_data.validated_data['email'],
@@ -333,7 +336,18 @@ class UserRegisterView(APIView):
 
             cache.set(f'user_registration:{random_code}', user_data, timeout=180)
             return Response({"code":random_code,}, status=200)
-        return Response({"error": "Invalid data."}, status=400)
+        else:
+            if 'email' in ser_data.errors:
+                return Response({"errors": ser_data.errors}, status=407)
+            
+            if 'full_name' in ser_data.errors:
+                return Response({"errors": ser_data.errors}, status=408)
+            
+            if 'phone_number' in ser_data.errors:
+                return Response({"errors": ser_data.errors}, status=409)
+            
+
+        return Response({"error": "Invalid data."}, status=405)
 
 
 
