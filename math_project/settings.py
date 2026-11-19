@@ -1,7 +1,6 @@
 
 
 from pathlib import Path
-from django.conf import settings  
 from django.core.exceptions import ImproperlyConfigured
 from datetime import timedelta
 import environ
@@ -91,11 +90,16 @@ TEMPLATES = [
 #WSGI_APPLICATION = 'math_project.wsgi.application'
 ASGI_APPLICATION = 'math_project.asgi.application'
 
+# Redis Configuration
+REDIS_HOST = env('REDIS_HOST', default='localhost')
+REDIS_PORT = env.int('REDIS_PORT', default=6379)
+REDIS_DB = env.int('REDIS_DB', default=0)
+
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],  # آدرس ردیس
+            "hosts": [(REDIS_HOST, REDIS_PORT)],
         },
     },
 }
@@ -163,16 +167,10 @@ CORS_ALLOW_METHODS=[
     "PUT"
 ]
 
-REDIS_HOST = 'localhost' 
-REDIS_PORT = 6379       
-REDIS_DB = 0 
-
-
-
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}/{settings.REDIS_DB}",
+        'LOCATION': f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}",
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
