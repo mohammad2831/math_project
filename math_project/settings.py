@@ -216,4 +216,11 @@ SIMPLE_JWT = {
 }
 
 
+# Third-party SMS Provider Configuration
+KAVENEGAR_API_KEY = env('KAVENEGAR_API_KEY', default='')
+SMSIR_API_KEY = env('SMSIR_API_KEY', default='')
+SMSIR_LINE_NUMBER = env('SMSIR_LINE_NUMBER', default='')
+
+
+
 

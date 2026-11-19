@@ -5,27 +5,24 @@ from sms_ir import SmsIr
 
 
 def send_message_to_mohammad():
-    api_key = 'gHx57HHTcBaG9uM94wxcvCvqcsF9Ascqrzg3KbRNoqTb0luT'  # کلید API خود را اینجا قرار بده
-    line_number = '30002108000528'  # شماره خط ارسال کننده پیامک
+    api_key = getattr(settings, 'SMSIR_API_KEY', '')
+    line_number = getattr(settings, 'SMSIR_LINE_NUMBER', '')
     recipient_number = '09033438205'
     message = 'سلام محمد! این یک پیام تستی است.'
+
+    if not api_key or not line_number:
+        return {"error": "SMSIR_API_KEY or SMSIR_LINE_NUMBER is not configured"}
 
     sms_ir = SmsIr(api_key, line_number)
     response = sms_ir.send_sms(recipient_number, message, line_number)
     return response
 
 
-
-
-
-
-
-######################################################################3
 class KavenegarSMS:
     API_URL = "https://api.kavenegar.com/v1/{api_key}/sms/send.json"
 
-    def __init__(self):
-        self.api_key = '7A596E7A7163534C667836493676706D484674715A54356C3631662F6C646D48396E4E564D6D3757522F553D'
+    def __init__(self, api_key=None):
+        self.api_key = api_key or getattr(settings, 'KAVENEGAR_API_KEY', '')
 
     def send_sms(self, receptor, message):
         """
@@ -34,6 +31,8 @@ class KavenegarSMS:
         :param message: متن پیامک (مثال: 'کد تایید شما: 123456')
         :return: پاسخ JSON از API کاوه نگار
         """
+        if not self.api_key:
+            return {"error": "KAVENEGAR_API_KEY is not configured"}
         url = self.API_URL.format(api_key=self.api_key)
         payload = {
             "receptor": receptor,
